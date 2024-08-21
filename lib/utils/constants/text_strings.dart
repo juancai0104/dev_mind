@@ -1,7 +1,8 @@
 class TTexts {
 
-  static const String loginTitle = "Bienvenido de nuevo";
-  static const String loginSubtitle = "Inicia Sesión para seguir aprendiendo";
+  // Login
+  static const String loginTitle = "¡Nos alegra verte!";
+  static const String loginSubtitle = "Inicia Sesión y sigue aprendiendo";
   static const String signUpTitle = "Registrarme en";
   static const String forgetPassword = "¿Olvidaste tu contraseña?";
   static const String confirmEmailSubtitle = "¡Felicitaciones! Tu cuenta está esperando: verifica tu correo electrónico para comenzar a aprender.";
@@ -11,12 +12,17 @@ class TTexts {
   static const String onBoardingTitle1 = "Aprende a progamar";
 
 
+  // Sign Up
+  static const String firstName = "Nombres";
+  static const String lastName = "Apellidos";
+  static const String username = "Nombre de Usuario";
+
   static const String email = "Correo Electrónico";
   static const String password = "Contraseña";
   static const String newPassword = "Nueva Contraseña";
-  static const String username = "Nombre de Usuario";
+
   static const String rememberMe = "Recordarme";
-  static const String forgetPasswordTitle = "Olvidé mi contraseña";
+  static const String forgetPasswordTitle = "Olvidé mi contraseña de";
   static const String forgetPasswordSubtitle = "No te preocupes, escribe tu correo electrónico y te enviaremos un enlace para restablecerla.";
   static const String signIn = "Iniciar Sesión";
   static const String createAccount = "Registrarme";
