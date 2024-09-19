@@ -9,7 +9,7 @@ import 'features/authentication/screens/password_configuration/forget_password.d
 import 'features/authentication/screens/password_configuration/reset_password.dart';
 import 'features/authentication/screens/signup/signup.dart';
 import 'features/module/screens/home/home.dart';
-import 'features/module/screens/modules/module.dart';
+import 'features/module/screens/modules/module_theory.dart';
 
 class NavigationMenu extends StatelessWidget {
   const NavigationMenu({super.key});
@@ -49,7 +49,7 @@ class NavigationController extends GetxController {
     //ForgotPasswordScreen(),//Container(color: Colors.purple),
     //ChangePasswordScreen(),//Container(color: Colors.orange),
     const ForgetPassword(),//Container(color: Colors.blue)
-    const ResetPassword(),
-    const ModuleScreen()
+    const ModuleTheoryScreen(languageId: 1),
+    const ModuleTheoryScreen(languageId: 2)
   ];
 }
