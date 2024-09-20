@@ -45,6 +45,6 @@ class TTexts {
   static const String done = "Listo";
 
   // Home
-  static const String homeAppbarTitle = "Hola Juan";
-  static const String homeAppbarSubtitle = "¡Empecemos a programar!  👨‍💻";
+  static const String homeAppbarTitleWave = "Hola Juan";
+  static const String homeAppbarSubtitleMotivational = "¡Empecemos a programar! \n👋🏼😎👨‍💻" ;
 }

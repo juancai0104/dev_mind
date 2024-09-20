@@ -1,5 +1,5 @@
 import 'package:dev_mind/common/widgets/appbar/appbar.dart';
-import 'package:dev_mind/common/widgets/modules/module_cards/module_card_vertical.dart';
+import 'package:dev_mind/common/widgets/modules/module_cards/module_card_java.dart';
 import 'package:dev_mind/utils/constants/sizes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

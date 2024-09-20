@@ -8,4 +8,8 @@ class TImages {
 
   // Social Logos
   static const String google = "assets/logos/google.png";
+
+  static const String js = "assets/logos/languages/java.png";
+
+  static const String python = "assets/logos/languages/python.png";
 }
