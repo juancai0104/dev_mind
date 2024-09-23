@@ -47,4 +47,9 @@ class TTexts {
   // Home
   static const String homeAppbarTitleWave = "Hola Juan";
   static const String homeAppbarSubtitleMotivational = "¡Empecemos a programar! \n👋🏼😎👨‍💻" ;
+
+  // Difficulty levels
+  static const String beginner = "Principiante";
+  static const String intermediate = "Intermedio";
+  static const String advanced = "Avanzado";
 }
