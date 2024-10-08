@@ -75,7 +75,7 @@ class _CurvedHeaderState extends State<CurvedHeader> with SingleTickerProviderSt
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: 350.0,
       child: Stack(
         children: [

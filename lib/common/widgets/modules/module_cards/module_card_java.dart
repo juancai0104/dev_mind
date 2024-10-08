@@ -50,7 +50,7 @@ class TModuleCardJava extends StatelessWidget {
           children: [
             Expanded(
               child: TRoundedContainer(
-                height: 180,
+                height: 50,
                 padding: const EdgeInsets.all(TSizes.sm),
                 backgroundColor: dark ? Colors.black : Colors.white,
                 child: Stack(
@@ -105,7 +105,7 @@ class TModuleCardJava extends StatelessWidget {
                     '~ 45 minutos',
                     style: textStyle,
                   ),
-                  Icon(
+                  const Icon(
                     Icons.code,
                     color: TColors.buttonPrimary,
                     size: 20,

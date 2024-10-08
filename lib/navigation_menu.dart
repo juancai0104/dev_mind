@@ -1,4 +1,5 @@
 import 'package:dev_mind/features/authentication/screens/login/login.dart';
+import 'package:dev_mind/features/personalization/screens/settings/settings.dart';
 import 'package:dev_mind/utils/helpers/helper_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -46,10 +47,7 @@ class NavigationController extends GetxController {
 
   final screens = [
     const HomeScreen(),
-    //ForgotPasswordScreen(),//Container(color: Colors.purple),
-    //ChangePasswordScreen(),//Container(color: Colors.orange),
-    const ForgetPassword(),//Container(color: Colors.blue)
-    const ModuleTheoryScreen(languageId: 1),
-    const ModuleTheoryScreen(languageId: 2)
+    const ModuleTheoryScreen(languageId: 2),
+    const SettingsScreen()
   ];
 }
