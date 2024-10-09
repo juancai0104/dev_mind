@@ -6,6 +6,12 @@ class TImages {
 
   static const String nameAppLogo = "assets/logos/dev_mind/dev_mind_name.png";
 
+  static const String devMindHorizontal = "assets/logos/dev_mind/dev_mind_horizontal.png";
+
+  static const String relax = "assets/logos/dev_mind/relax.png";
+
+  static const String holdingPhone = "assets/logos/dev_mind/holdingphone.png";
+
   // Social Logos
   static const String google = "assets/logos/google.png";
 

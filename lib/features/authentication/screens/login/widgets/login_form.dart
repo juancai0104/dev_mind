@@ -6,6 +6,7 @@ import 'package:iconsax/iconsax.dart';
 import '../../../../../navigation_menu.dart';
 import '../../../../../utils/constants/sizes.dart';
 import '../../../../../utils/constants/text_strings.dart';
+import '../../password_configuration/forget_password.dart';
 import '../../signup/signup.dart';
 
 class TLoginForm extends StatelessWidget {
@@ -46,14 +47,14 @@ class TLoginForm extends StatelessWidget {
                 // Remember me
                 Row(
                   children: [
-                    Checkbox(value: true, onChanged: (value){}),
+                    Checkbox(value: false, onChanged: (value){}),
                     const Text(TTexts.rememberMe)
                   ],
                 ),
 
                 // Forget password
                 TextButton(
-                  onPressed: (){},
+                  onPressed: () => Get.to(() => const ForgetPassword()),
                   child: const Text(
                     TTexts.forgetPassword,
                     style: TextStyle(color: TColors.accent),

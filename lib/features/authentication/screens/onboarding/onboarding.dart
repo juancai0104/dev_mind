@@ -26,19 +26,19 @@ class OnboardingScreen extends StatelessWidget {
             onPageChanged: controller.updatePageIndicator,
             children: const [
               OnBoardingPage(
-                image: TImages.google,
-                title: TTexts.onBoardingTitle1,
-                subtitle: TTexts.onBoardingTitle1
+                image: TImages.devMindHorizontal,
+                title: TTexts.onBoardingH1Title,
+                subtitle: TTexts.onBoardingH1Subtitle
               ),
               OnBoardingPage(
-                image: TImages.google,
-                title: TTexts.onBoardingTitle1,
-                subtitle: TTexts.onBoardingTitle1
+                image: TImages.relax,
+                title: TTexts.onBoardingH2Title,
+                subtitle: TTexts.onBoardingH2Subtitle
               ),
               OnBoardingPage(
-                image: TImages.google,
-                title: TTexts.onBoardingTitle1,
-                subtitle: TTexts.onBoardingTitle1
+                image: TImages.holdingPhone,
+                title: TTexts.onBoardingH3Title,
+                subtitle: TTexts.onBoardingH3subtitle
               )
             ],
           ),

@@ -1,11 +1,11 @@
 import 'package:dev_mind/features/authentication/screens/login/login.dart';
 import 'package:dev_mind/features/personalization/screens/settings/settings.dart';
+import 'package:dev_mind/utils/constants/colors.dart';
 import 'package:dev_mind/utils/helpers/helper_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 
-import 'features/authentication/screens/password_configuration/forget_password.dart';
 import 'features/authentication/screens/password_configuration/forget_password.dart';
 import 'features/authentication/screens/password_configuration/reset_password.dart';
 import 'features/authentication/screens/signup/signup.dart';
@@ -21,23 +21,34 @@ class NavigationMenu extends StatelessWidget {
     final darkMode = THelperFunctions.isDarkMode(context);
 
     return Scaffold(
-        bottomNavigationBar: Obx(
-              () => NavigationBar(
-            height: 80,
+      body: Obx(() => controller.screens[controller.selectedIndex.value]),
+      bottomNavigationBar: Obx(
+            () => Container(
+          decoration: BoxDecoration(
+            color: darkMode ? TColors.primary : TColors.secondary,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(70)),
+            boxShadow: [
+              BoxShadow(
+                color: darkMode ? Colors.black.withOpacity(0.5) : Colors.grey.withOpacity(0.5),
+                blurRadius: 10,
+                offset: const Offset(10, -2),
+              ),
+            ],
+          ),
+          child: NavigationBar(
+            height: 70,
             elevation: 0,
             selectedIndex: controller.selectedIndex.value,
             onDestinationSelected: (index) => controller.selectedIndex.value = index,
-            backgroundColor: darkMode ? Colors.black : Colors.white,
-            indicatorColor: darkMode ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.1),
+            backgroundColor: Colors.transparent,
+            indicatorColor: darkMode ? Colors.deepPurple.withOpacity(0.1) : Colors.black.withOpacity(0.1),
             destinations: const [
               NavigationDestination(icon: Icon(Iconsax.home), label: 'Inicio'),
-              NavigationDestination(icon: Icon(Iconsax.shop), label: 'Tienda'),
-              NavigationDestination(icon: Icon(Iconsax.heart), label: 'Lista de deseos'),
-              NavigationDestination(icon: Icon(Iconsax.user), label: 'Perfil'),
+              NavigationDestination(icon: Icon(Iconsax.setting), label: 'Ajustes'),
             ],
           ),
         ),
-        body: Obx(() => controller.screens[controller.selectedIndex.value])
+      ),
     );
   }
 }
@@ -47,7 +58,6 @@ class NavigationController extends GetxController {
 
   final screens = [
     const HomeScreen(),
-    const ModuleTheoryScreen(languageId: 2),
-    const SettingsScreen()
+    const SettingsScreen(),
   ];
 }

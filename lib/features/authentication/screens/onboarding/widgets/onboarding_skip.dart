@@ -18,8 +18,8 @@ class OnBoardingSkip extends StatelessWidget {
         child: TextButton(
           onPressed: () => OnBoardingController.instance.skipPage(),
           child: const Text(
-            'Skip',
-            style: TextStyle(color: TColors.accent)
+            'Omitir',
+            style: TextStyle(color: TColors.primary)
           ),
         )
     );

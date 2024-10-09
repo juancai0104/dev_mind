@@ -1,6 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 
+import '../../../../features/module/screens/modules/module_theory.dart';
 import '../../../../utils/constants/colors.dart';
 import '../../../../utils/constants/image_strings.dart';
 import '../../../../utils/constants/sizes.dart';
@@ -22,7 +25,7 @@ class TModuleCardPython extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        // Implement navigation or any other interaction
+        Get.to(() => const ModuleTheoryScreen(languageId: 1));
       },
       child: Container(
         width: 180,
@@ -75,7 +78,7 @@ class TModuleCardPython extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
+                            const Text(
                               'Python',
                               style: TextStyle(
                                 color: Colors.white,
@@ -105,7 +108,7 @@ class TModuleCardPython extends StatelessWidget {
                     '60 minutos',
                     style: textStyle,
                   ),
-                  Icon(
+                  const Icon(
                     Icons.code,
                     color: Colors.deepPurpleAccent,
                     size: 20,

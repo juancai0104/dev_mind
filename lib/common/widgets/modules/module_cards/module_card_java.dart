@@ -3,7 +3,10 @@ import 'package:dev_mind/common/widgets/custom_shapes/containers/rounded_images.
 import 'package:dev_mind/utils/constants/image_strings.dart';
 import 'package:dev_mind/utils/helpers/helper_functions.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 
+import '../../../../features/module/screens/modules/module_theory.dart';
 import '../../../../utils/constants/colors.dart';
 import '../../../../utils/constants/sizes.dart';
 import '../../../styles/shadows.dart';
@@ -22,7 +25,7 @@ class TModuleCardJava extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        // Implement navigation or any other interaction
+        Get.to(() => const ModuleTheoryScreen(languageId: 2));
       },
       child: Container(
         width: 180,
