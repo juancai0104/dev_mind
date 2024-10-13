@@ -64,9 +64,10 @@ class TTexts {
   static const String advanced = "Avanzado";
 
   // Settings
-  static const String settingsTitle = "Configuración de la Cuenta";
+  static const String accountSettingsTitle = "Configuración de la Cuenta";
   static const String settingsMyProfileTitle = "Mi perfil";
   static const String settingsMyProfileSubtitle = "Actualiza tus datos personales";
-  static const String settingsPreferencesTitle = "Preferencias";
+  static const String appSettingsTitle = "Configuración de la Aplicación";
+  static const String settingsPreferencesTitle = "Cambio de tema";
   static const String settingsPreferencesSubtitle = "Elige el estilo visual que prefieras";
 }

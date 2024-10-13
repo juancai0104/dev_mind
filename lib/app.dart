@@ -1,3 +1,4 @@
+import 'package:dev_mind/utils/local_storage/storage_utility.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -9,8 +10,12 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final _localStorage = TLocalStorage();
+
+    final isDarkMode = _localStorage.readData<bool>('isDarkMode') ?? Get.isPlatformDarkMode;
+
     return GetMaterialApp(
-        themeMode: ThemeMode.system,
+        themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
         theme: TAppTheme.lightTheme,
         darkTheme: TAppTheme.darkTheme,
         home: const OnboardingScreen()
