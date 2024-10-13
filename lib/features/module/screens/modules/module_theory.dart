@@ -1,5 +1,6 @@
 import 'package:dev_mind/common/widgets/appbar/appbar.dart';
 import 'package:dev_mind/common/widgets/modules/module_cards/module_card_java.dart';
+import 'package:dev_mind/features/module/screens/modules/widgets/code_editor.dart';
 import 'package:dev_mind/utils/constants/sizes.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -77,7 +78,7 @@ class ModuleTheoryScreen extends StatelessWidget {
                       backgroundColor: TColors.beginner,
                       side: const BorderSide(color: TColors.beginner),
                     ),
-                    onPressed: (){},
+                    onPressed: () => Get.to(() => const CodeEditor(languageName: 'javascript')),
                     child: const Text(TTexts.beginner)
                   ),
                 ),
