@@ -62,4 +62,11 @@ class TTexts {
   static const String beginner = "Principiante";
   static const String intermediate = "Intermedio";
   static const String advanced = "Avanzado";
+
+  // Settings
+  static const String settingsTitle = "Configuración de la Cuenta";
+  static const String settingsMyProfileTitle = "Mi perfil";
+  static const String settingsMyProfileSubtitle = "Actualiza tus datos personales";
+  static const String settingsPreferencesTitle = "Preferencias";
+  static const String settingsPreferencesSubtitle = "Elige el estilo visual que prefieras";
 }
