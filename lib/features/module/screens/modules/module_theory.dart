@@ -16,6 +16,8 @@ class ModuleTheoryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final dark = THelperFunctions.isDarkMode(context);
+
     final Map<int, String> staticContent = {
       1: "Python es un lenguaje de programación interpretado, interactivo y orientado a objetos. Es muy popular por su facilidad de aprendizaje y versatilidad. En esta sección aprenderás sobre su sintaxis básica, estructuras de datos como listas y diccionarios, y funciones. En los ejercicios siguientes pondrás en práctica estos conceptos para resolver problemas reales.",
       2: "JavaScript es el lenguaje de programación de la web. Es utilizado para desarrollar páginas web interactivas y aplicaciones. En esta sección explorarás cómo funcionan las variables, funciones y eventos en JavaScript. Los ejercicios siguientes te permitirán interactuar con el DOM y manipular elementos de una página web.",
@@ -30,31 +32,33 @@ class ModuleTheoryScreen extends StatelessWidget {
     final String imagePath = staticImages[languageId] ?? "assets/images/default.png";
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Teoría')),
+      appBar: AppBar(
+        title: const Text('Teoría'),
+        iconTheme: IconThemeData(
+          color: dark ? TColors.grey : TColors.black,
+        ),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Container con fondo de color
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.blueGrey[50], // Fondo de color claro
+                color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Imagen antes del contenido
                   Image.asset(
-                    imagePath, // Imagen desde assets
-                    height: 200, // Altura de la imagen
+                    imagePath,
+                    height: 200,
                     width: double.infinity,
-                    fit: BoxFit.contain, // Ajustar la imagen
+                    fit: BoxFit.contain,
                   ),
                   const SizedBox(height: TSizes.spaceBtwItems),
-                  // Texto de la teoría
                   Text(
                     content,
                     style: const TextStyle(fontSize: 16),
