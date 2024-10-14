@@ -78,7 +78,12 @@ class ModuleTheoryScreen extends StatelessWidget {
                       backgroundColor: TColors.beginner,
                       side: const BorderSide(color: TColors.beginner),
                     ),
-                    onPressed: () => Get.to(() => const CodeEditor(languageName: 'javascript')),
+                    onPressed: () => Get.to(() => const CodeEditor(
+                      languageName: 'javascript',
+                      exerciseTitle: 'Ejercicio 1 de 10',
+                      exerciseDescription: 'Implementa una función en Python llamada multiplicacion(val1, val2) que calcule la multiplicación entre dos números. La función debe imprimir el resultado de la multiplicación de val1 y val2.',
+                      exerciseId: 20,
+                    )),
                     child: const Text(TTexts.beginner)
                   ),
                 ),
