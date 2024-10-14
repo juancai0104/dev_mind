@@ -1,20 +1,22 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_code_editor/flutter_code_editor.dart';
 import 'package:flutter_highlight/themes/a11y-light.dart';
 import 'package:highlight/languages/python.dart';
-import 'package:highlight/languages/javascript.dart'; // Puedes agregar más lenguajes si es necesario
+import 'package:highlight/languages/javascript.dart';
+import '../../../../../utils/constants/colors.dart';
+import '../../../controllers/module/code_editor_controller.dart'; // Importa el controlador
 
 class CodeEditor extends StatefulWidget {
-  final String? languageName;
+  final int? languageId;
   final String exerciseTitle;
   final String exerciseDescription;
   final int exerciseId;
 
   const CodeEditor({
     super.key,
-    this.languageName,
+    this.languageId,
     required this.exerciseTitle,
     required this.exerciseDescription,
     required this.exerciseId,
@@ -34,19 +36,18 @@ class _CodeEditorState extends State<CodeEditor> {
     super.initState();
     controller = CodeController(
       text: '',
-      language: _getLanguage(widget.languageName ?? 'python'),
+      language: _getLanguage(widget.languageId ?? 1),
     );
   }
 
-  // Función para seleccionar el lenguaje basado en el parámetro recibido
-  dynamic _getLanguage(String languageName) {
-    switch (languageName) {
-      case 'python':
-        return python; // Importado desde highlight/languages/python.dart
-      case 'javascript':
-        return javascript; // Importado desde highlight/languages/javascript.dart
+  dynamic _getLanguage(int languageId) {
+    switch (languageId) {
+      case 1:
+        return python;
+      case 2:
+        return javascript;
       default:
-        return python; // Lenguaje por defecto si no se pasa uno válido
+        return python;
     }
   }
 
@@ -54,44 +55,35 @@ class _CodeEditorState extends State<CodeEditor> {
     if (_isExecuting) return;
 
     final code = controller.text;
-    final language = widget.languageName ?? 'python';
+    final language = widget.languageId ?? 1;
 
     setState(() {
       _isExecuting = true;
     });
 
-    try {
-      final response = await http.post(
-        Uri.parse('http://10.0.2.2:3000/compile'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode(<String, dynamic>{
-          'exerciseId': widget.exerciseId,
-          'language': language,
-          'code': code,
-        }),
-      );
+    CodeEditorController codeEditorController = CodeEditorController();
+    final output = await codeEditorController.executeCode(
+      code: code,
+      language: language,
+      exerciseId: widget.exerciseId,
+    );
 
-      if (response.statusCode == 200) {
-        final output = jsonDecode(response.body)['output'];
-        setState(() {
-          _output = output;
-        });
-      } else {
-        setState(() {
-          _output = 'Error: ${response.body}';
-        });
-      }
-    } catch (e) {
-      setState(() {
-        _output = 'Error: ${e.toString()}';
-      });
-    } finally {
-      setState(() {
-        _isExecuting = false;
-      });
+    // Decodificar la respuesta JSON y procesar el array de resultados
+    final decodedResponse = jsonDecode(output);
+    final results = decodedResponse['results'] as List<dynamic>;
+
+    // Iterar sobre los resultados y construir la salida
+    String formattedOutput = '';
+    for (var result in results) {
+      formattedOutput += 'Output: ${result['output']}\n';
+      formattedOutput += 'Expected: ${result['expectedResult']}\n';
+      formattedOutput += 'Correct: ${result['isCorrect']}\n\n';
     }
+
+    setState(() {
+      _output = formattedOutput;
+      _isExecuting = false;
+    });
   }
 
   @override
@@ -117,12 +109,12 @@ class _CodeEditorState extends State<CodeEditor> {
               child: Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.lightBlue,
+                  color: TColors.primary,
                   borderRadius: BorderRadius.circular(8.0),
                 ),
                 child: Text(
                   widget.exerciseDescription,
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                  style: const TextStyle(fontSize: 18),
                 ),
               ),
             ),
@@ -141,7 +133,7 @@ class _CodeEditorState extends State<CodeEditor> {
                         ),
                         child: CodeField(
                           controller: controller,
-                          minLines: 20,
+                          minLines: 10,
                           decoration: BoxDecoration(
                             border: Border.all(color: Colors.grey),
                             borderRadius: BorderRadius.circular(8.0),
@@ -155,15 +147,24 @@ class _CodeEditorState extends State<CodeEditor> {
             ),
             Padding(
               padding: const EdgeInsets.all(16.0),
-              child: ElevatedButton(
-                onPressed: _isExecuting ? null : executeCode,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFFF6F61),
-                  foregroundColor: Colors.white,
+              child: SizedBox(
+                width: double.infinity,  // Esto hace que el botón ocupe todo el ancho disponible
+                child: ElevatedButton(
+                  onPressed: _isExecuting ? null : executeCode,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFFF6F61),
+                    foregroundColor: Colors.white,
+                  ),
+                  child: _isExecuting
+                      ? const SizedBox(
+                          height: 20.0,
+                          width: 20.0,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.0,
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        ))
+                      : const Text('Ejecutar código'),
                 ),
-                child: _isExecuting
-                    ? const CircularProgressIndicator()
-                    : const Text('Ejecutar código'),
               ),
             ),
             Padding(
