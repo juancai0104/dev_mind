@@ -7,19 +7,17 @@ import 'package:highlight/languages/python.dart';
 import 'package:highlight/languages/javascript.dart';
 import '../../../../../utils/constants/colors.dart';
 import '../../../controllers/module/code_editor_controller.dart'; // Importa el controlador
+import '../../../controllers/module/exercise_controller.dart'; // Importa el controlador de ejercicios
+import '../../../models/exercise.dart'; // Importa el modelo Exercise
 
 class CodeEditor extends StatefulWidget {
-  final int? languageId;
-  final String exerciseTitle;
-  final String exerciseDescription;
-  final int exerciseId;
+  final int moduleId;
+  final int difficultyId; // Dificultad del ejercicio (1: Principiante, 2: Intermedio, 3: Avanzado)
 
   const CodeEditor({
     super.key,
-    this.languageId,
-    required this.exerciseTitle,
-    required this.exerciseDescription,
-    required this.exerciseId,
+    required this.moduleId,
+    required this.difficultyId,
   });
 
   @override
@@ -30,18 +28,40 @@ class _CodeEditorState extends State<CodeEditor> {
   String _output = '';
   late CodeController controller;
   bool _isExecuting = false;
+  int currentExerciseIndex = 0;
+  List<Exercise> exercises = [];
 
   @override
   void initState() {
     super.initState();
+    _loadExercises();
     controller = CodeController(
       text: '',
-      language: _getLanguage(widget.languageId ?? 1),
+      language: _getLanguage(widget.moduleId),
     );
   }
 
-  dynamic _getLanguage(int languageId) {
-    switch (languageId) {
+  Future<void> _loadExercises() async {
+    try {
+      ExerciseController exerciseController = ExerciseController();
+      print(widget.moduleId);
+      print(widget.difficultyId);
+      exercises = await exerciseController.getByModuleIdAndDifficultyId(widget.moduleId, widget.difficultyId);
+      setState(() {
+        if (exercises.isNotEmpty) {
+          controller = CodeController(
+            text: '',
+            language: _getLanguage(widget.moduleId),
+          );
+        }
+      });
+    } catch (e) {
+      print('Error loading exercises: $e');
+    }
+  }
+
+  dynamic _getLanguage(int moduleId) {
+    switch (moduleId) {
       case 1:
         return python;
       case 2:
@@ -55,42 +75,136 @@ class _CodeEditorState extends State<CodeEditor> {
     if (_isExecuting) return;
 
     final code = controller.text;
-    final language = widget.languageId ?? 1;
+    final language = _getLanguage(widget.moduleId);
 
     setState(() {
       _isExecuting = true;
     });
 
     CodeEditorController codeEditorController = CodeEditorController();
-    final output = await codeEditorController.executeCode(
-      code: code,
-      language: language,
-      exerciseId: widget.exerciseId,
-    );
+    try {
+      final output = await codeEditorController.executeCode(
+        code: code,
+        moduleId: widget.moduleId,
+        exerciseId: exercises[currentExerciseIndex].id,
+      );
 
-    // Decodificar la respuesta JSON y procesar el array de resultados
-    final decodedResponse = jsonDecode(output);
-    final results = decodedResponse['results'] as List<dynamic>;
+      // Decodificar la respuesta JSON y procesar el array de resultados
+      final decodedResponse = jsonDecode(output);
+      final results = decodedResponse['results'] as List<dynamic>;
 
-    // Iterar sobre los resultados y construir la salida
-    String formattedOutput = '';
-    for (var result in results) {
-      formattedOutput += 'Output: ${result['output']}\n';
-      formattedOutput += 'Expected: ${result['expectedResult']}\n';
-      formattedOutput += 'Correct: ${result['isCorrect']}\n\n';
+      // Iterar sobre los resultados y construir la salida
+      String formattedOutput = '';
+      for (var result in results) {
+        formattedOutput += 'Output: ${result['output']}\n';
+        formattedOutput += 'OutputNew: ${result['outputNew']}';
+        formattedOutput += 'Expected: ${result['expectedResult']}\n';
+        formattedOutput += 'Correct: ${result['isCorrect']}\n\n';
+      }
+
+      setState(() {
+        _output = formattedOutput;
+      });
+
+      // Verificar si el ejercicio fue resuelto correctamente
+      bool allCorrect = results.every((result) => result['isCorrect'] == true);
+      if (allCorrect) {
+        _showSuccessModal();
+      } else {
+        _showFailureModal();
+      }
+    } catch (error) {
+      setState(() {
+        _output = 'Error al ejecutar el código: $error';
+      });
+    } finally {
+      setState(() {
+        _isExecuting = false;
+      });
     }
+  }
 
-    setState(() {
-      _output = formattedOutput;
-      _isExecuting = false;
-    });
+  void _showSuccessModal() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('¡Correcto!'),
+          content: const Text('Has resuelto el ejercicio correctamente.'),
+          actions: [
+            TextButton(
+              child: const Text('Continuar'),
+              onPressed: () {
+                Navigator.pop(context);
+                _goToNextExercise();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showFailureModal() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Incorrecto'),
+          content: const Text('Tu código no ha pasado las pruebas. Revisa los resultados y vuelve a intentarlo.'),
+          actions: [
+            TextButton(
+              child: const Text('Volver a intentar'),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _goToNextExercise() {
+    if (currentExerciseIndex < exercises.length - 1) {
+      setState(() {
+        currentExerciseIndex++;
+        _output = '';
+        controller.clear();
+      });
+    } else {
+      // Lógica para cuando el usuario termine todos los ejercicios
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('¡Felicidades!'),
+            content: const Text('Has completado todos los ejercicios de este nivel.'),
+            actions: [
+              TextButton(
+                child: const Text('Aceptar'),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    if (exercises.isEmpty) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    final currentExercise = exercises[currentExerciseIndex];
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.exerciseTitle),
+        title: Text('Ejercicio ${currentExerciseIndex + 1}'),
         centerTitle: true,
         actions: [
           IconButton(
@@ -113,7 +227,7 @@ class _CodeEditorState extends State<CodeEditor> {
                   borderRadius: BorderRadius.circular(8.0),
                 ),
                 child: Text(
-                  widget.exerciseDescription,
+                  currentExercise.description,
                   style: const TextStyle(fontSize: 18),
                 ),
               ),
@@ -148,7 +262,7 @@ class _CodeEditorState extends State<CodeEditor> {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: SizedBox(
-                width: double.infinity,  // Esto hace que el botón ocupe todo el ancho disponible
+                width: double.infinity,
                 child: ElevatedButton(
                   onPressed: _isExecuting ? null : executeCode,
                   style: ElevatedButton.styleFrom(
@@ -157,26 +271,17 @@ class _CodeEditorState extends State<CodeEditor> {
                   ),
                   child: _isExecuting
                       ? const SizedBox(
-                          height: 20.0,
-                          width: 20.0,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2.0,
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                        ))
+                    height: 20.0,
+                    width: 20.0,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.0,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                  )
                       : const Text('Ejecutar código'),
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                _output,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Theme.of(context).textTheme.bodyLarge?.color,
-                ),
-              ),
-            ),
+            )
           ],
         ),
       ),
