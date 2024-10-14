@@ -1,18 +1,20 @@
 import 'dart:convert';
 
+import 'package:dev_mind/common/widgets/modules/dialogs/custom_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_code_editor/flutter_code_editor.dart';
 import 'package:flutter_highlight/themes/a11y-light.dart';
 import 'package:highlight/languages/python.dart';
 import 'package:highlight/languages/javascript.dart';
+import 'package:iconsax/iconsax.dart';
 import '../../../../../utils/constants/colors.dart';
-import '../../../controllers/module/code_editor_controller.dart'; // Importa el controlador
-import '../../../controllers/module/exercise_controller.dart'; // Importa el controlador de ejercicios
-import '../../../models/exercise.dart'; // Importa el modelo Exercise
+import '../../../controllers/module/code_editor_controller.dart';
+import '../../../controllers/module/exercise_controller.dart';
+import '../../../models/exercise.dart';
 
 class CodeEditor extends StatefulWidget {
   final int moduleId;
-  final int difficultyId; // Dificultad del ejercicio (1: Principiante, 2: Intermedio, 3: Avanzado)
+  final int difficultyId;
 
   const CodeEditor({
     super.key,
@@ -44,8 +46,6 @@ class _CodeEditorState extends State<CodeEditor> {
   Future<void> _loadExercises() async {
     try {
       ExerciseController exerciseController = ExerciseController();
-      print(widget.moduleId);
-      print(widget.difficultyId);
       exercises = await exerciseController.getByModuleIdAndDifficultyId(widget.moduleId, widget.difficultyId);
       setState(() {
         if (exercises.isNotEmpty) {
@@ -89,24 +89,21 @@ class _CodeEditorState extends State<CodeEditor> {
         exerciseId: exercises[currentExerciseIndex].id,
       );
 
-      // Decodificar la respuesta JSON y procesar el array de resultados
       final decodedResponse = jsonDecode(output);
       final results = decodedResponse['results'] as List<dynamic>;
 
-      // Iterar sobre los resultados y construir la salida
       String formattedOutput = '';
       for (var result in results) {
-        formattedOutput += 'Output: ${result['output']}\n';
-        formattedOutput += 'OutputNew: ${result['outputNew']}';
-        formattedOutput += 'Expected: ${result['expectedResult']}\n';
-        formattedOutput += 'Correct: ${result['isCorrect']}\n\n';
+        //formattedOutput += '${result['output']}\n';
+        formattedOutput += '${result['outputNew']}';
+        formattedOutput += '${result['expectedResult']}\n';
+        //formattedOutput += '${result['isCorrect']}\n\n';
       }
 
       setState(() {
         _output = formattedOutput;
       });
 
-      // Verificar si el ejercicio fue resuelto correctamente
       bool allCorrect = results.every((result) => result['isCorrect'] == true);
       if (allCorrect) {
         _showSuccessModal();
@@ -128,18 +125,17 @@ class _CodeEditorState extends State<CodeEditor> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('¡Correcto!'),
-          content: const Text('Has resuelto el ejercicio correctamente.'),
-          actions: [
-            TextButton(
-              child: const Text('Continuar'),
-              onPressed: () {
-                Navigator.pop(context);
-                _goToNextExercise();
-              },
-            ),
-          ],
+        return CustomDialog(
+          title: '¡Correcto!',
+          message: 'Has resuelto el ejercicio correctamente.',
+          icon: Iconsax.tick_circle,
+          iconColor: Colors.green,
+          buttonText: 'Continuar',
+          formattedOutput: _output,
+          onButtonPressed: () {
+            Navigator.pop(context);
+            _goToNextExercise();
+          }
         );
       },
     );
@@ -149,17 +145,16 @@ class _CodeEditorState extends State<CodeEditor> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Incorrecto'),
-          content: const Text('Tu código no ha pasado las pruebas. Revisa los resultados y vuelve a intentarlo.'),
-          actions: [
-            TextButton(
-              child: const Text('Volver a intentar'),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-          ],
+        return CustomDialog(
+          title: 'Incorrecto',
+          message: 'Tu código no ha pasado las pruebas. Revisa los resultados y vuelve a intentarlo.',
+          icon: Iconsax.close_circle,
+          iconColor: Colors.red,
+          buttonText: 'Volver a intentar',
+          formattedOutput: _output,
+          onButtonPressed: () {
+            Navigator.pop(context);
+          },
         );
       },
     );
@@ -173,21 +168,18 @@ class _CodeEditorState extends State<CodeEditor> {
         controller.clear();
       });
     } else {
-      // Lógica para cuando el usuario termine todos los ejercicios
       showDialog(
         context: context,
         builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('¡Felicidades!'),
-            content: const Text('Has completado todos los ejercicios de este nivel.'),
-            actions: [
-              TextButton(
-                child: const Text('Aceptar'),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
-            ],
+          return CustomDialog(
+            title: '¡Felicidades!',
+            message: 'Has completado todos los ejercicios de este nivel.',
+            icon: Iconsax.cake,
+            iconColor: Colors.green,
+            buttonText: 'Aceptar',
+            onButtonPressed: () {
+              Navigator.pop(context);
+            }
           );
         },
       );
@@ -201,10 +193,11 @@ class _CodeEditorState extends State<CodeEditor> {
     }
 
     final currentExercise = exercises[currentExerciseIndex];
+    final totalExercises = exercises.length;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Ejercicio ${currentExerciseIndex + 1}'),
+        title: Text('Ejercicio ${currentExerciseIndex + 1} de $totalExercises'),
         centerTitle: true,
         actions: [
           IconButton(
