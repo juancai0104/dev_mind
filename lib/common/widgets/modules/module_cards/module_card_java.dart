@@ -25,7 +25,7 @@ class TModuleCardJava extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        Get.to(() => const ModuleTheoryScreen(languageId: 2));
+        Get.to(() => ModuleTheoryScreen(languageId: 2));
       },
       child: Container(
         width: 180,

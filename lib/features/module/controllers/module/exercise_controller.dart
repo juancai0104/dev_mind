@@ -10,7 +10,6 @@ class ExerciseController {
 
     if (response.statusCode == 200) {
       List<dynamic> jsonData = jsonDecode(response.body);
-      print(jsonData.map((json) => Exercise.fromJson(json)).toList());
       return jsonData.map((json) => Exercise.fromJson(json)).toList();
     } else {
       throw Exception('Failed to load exercises');
