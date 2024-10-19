@@ -1,9 +1,11 @@
 import 'dart:convert';
 
 import 'package:dev_mind/common/widgets/modules/dialogs/custom_dialog.dart';
+import 'package:dev_mind/features/module/screens/home/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_code_editor/flutter_code_editor.dart';
 import 'package:flutter_highlight/themes/a11y-light.dart';
+import 'package:get/get.dart';
 import 'package:highlight/languages/python.dart';
 import 'package:highlight/languages/javascript.dart';
 import 'package:iconsax/iconsax.dart';
@@ -11,6 +13,7 @@ import '../../../../../utils/constants/colors.dart';
 import '../../../controllers/module/code_editor_controller.dart';
 import '../../../controllers/module/exercise_controller.dart';
 import '../../../models/exercise.dart';
+import '../module_theory.dart';
 
 class CodeEditor extends StatefulWidget {
   final int moduleId;
@@ -171,15 +174,41 @@ class _CodeEditorState extends State<CodeEditor> {
       showDialog(
         context: context,
         builder: (BuildContext context) {
-          return CustomDialog(
-            title: '¡Felicidades!',
-            message: 'Has completado todos los ejercicios de este nivel.',
-            icon: Iconsax.cake,
-            iconColor: Colors.green,
-            buttonText: 'Aceptar',
-            onButtonPressed: () {
-              Navigator.pop(context);
-            }
+          return AlertDialog(
+            title: const Row(
+              children: [
+                Icon(Iconsax.cake, color: Colors.green),
+                SizedBox(width: 8),
+                Text('¡Felicidades!')
+              ],
+            ),
+            content: const Text('Has completado todos los ejercicios de este nivel.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  Get.offAll(() => const HomeScreen());
+                },
+                child: const Text('Ir al inicio')
+              ),
+              TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+
+                    int nextLevel = widget.difficultyId + 1;
+
+                    if (nextLevel <= 3) {
+                      Get.off(() => CodeEditor(
+                        moduleId: widget.moduleId,
+                        difficultyId: nextLevel
+                      ));
+                    } else {
+                      Get.off(() => ModuleTheoryScreen(languageId: widget.moduleId));
+                    }
+                  },
+                  child: const Text('Siguiente nivel')
+              )
+            ],
           );
         },
       );
