@@ -25,7 +25,7 @@ class TModuleCardPython extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        Get.to(() => const ModuleTheoryScreen(languageId: 1));
+        Get.to(() => ModuleTheoryScreen(languageId: 1));
       },
       child: Container(
         width: 180,

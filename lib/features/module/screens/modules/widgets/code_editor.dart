@@ -1,15 +1,29 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+
+import 'package:dev_mind/common/widgets/modules/dialogs/custom_dialog.dart';
+import 'package:dev_mind/features/module/screens/home/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_code_editor/flutter_code_editor.dart';
 import 'package:flutter_highlight/themes/a11y-light.dart';
+import 'package:get/get.dart';
 import 'package:highlight/languages/python.dart';
-import 'package:highlight/languages/javascript.dart'; // Puedes agregar más lenguajes si es necesario
+import 'package:highlight/languages/javascript.dart';
+import 'package:iconsax/iconsax.dart';
+import '../../../../../utils/constants/colors.dart';
+import '../../../controllers/module/code_editor_controller.dart';
+import '../../../controllers/module/exercise_controller.dart';
+import '../../../models/exercise.dart';
+import '../module_theory.dart';
 
 class CodeEditor extends StatefulWidget {
-  final String? languageName; // Permitir que languageName sea null
+  final int moduleId;
+  final int difficultyId;
 
-  const CodeEditor({super.key, this.languageName});
+  const CodeEditor({
+    super.key,
+    required this.moduleId,
+    required this.difficultyId,
+  });
 
   @override
   _CodeEditorState createState() => _CodeEditorState();
@@ -17,77 +31,202 @@ class CodeEditor extends StatefulWidget {
 
 class _CodeEditorState extends State<CodeEditor> {
   String _output = '';
-  CodeController? controller; // Cambiar a opcional
+  late CodeController controller;
+  bool _isExecuting = false;
+  int currentExerciseIndex = 0;
+  List<Exercise> exercises = [];
 
   @override
   void initState() {
     super.initState();
-
-    // Inicializa el controlador basado en el lenguaje pasado como parámetro
-    setState(() {
-      controller = CodeController(
-        text: '',
-        language: _getLanguage(widget.languageName ?? 'python'),
-      );
-    });
+    _loadExercises();
+    controller = CodeController(
+      text: '',
+      language: _getLanguage(widget.moduleId),
+    );
   }
 
-  // Función para seleccionar el lenguaje basado en el parámetro recibido
-  dynamic _getLanguage(String languageName) {
-    switch (languageName) {
-      case 'python':
-        return python; // Importado desde highlight/languages/python.dart
-      case 'javascript':
-        return javascript; // Importado desde highlight/languages/javascript.dart
+  Future<void> _loadExercises() async {
+    try {
+      ExerciseController exerciseController = ExerciseController();
+      exercises = await exerciseController.getByModuleIdAndDifficultyId(widget.moduleId, widget.difficultyId);
+      setState(() {
+        if (exercises.isNotEmpty) {
+          controller = CodeController(
+            text: '',
+            language: _getLanguage(widget.moduleId),
+          );
+        }
+      });
+    } catch (e) {
+      print('Error loading exercises: $e');
+    }
+  }
+
+  dynamic _getLanguage(int moduleId) {
+    switch (moduleId) {
+      case 1:
+        return python;
+      case 2:
+        return javascript;
       default:
-        return python; // Lenguaje por defecto si no se pasa uno válido
+        return python;
     }
   }
 
   Future<void> executeCode() async {
-    if (controller == null) return;
+    if (_isExecuting) return;
 
-    final code = controller!.text;
-    final language = widget.languageName ?? 'python'; // Si es null, usa 'python'
+    final code = controller.text;
+    final language = _getLanguage(widget.moduleId);
 
-    print('Code: $code');
-    print('Language: $language');
+    setState(() {
+      _isExecuting = true;
+    });
 
-    final response = await http.post(
-      Uri.parse('http://10.0.2.2:3000/compile'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
+    CodeEditorController codeEditorController = CodeEditorController();
+    try {
+      final output = await codeEditorController.executeCode(
+        code: code,
+        moduleId: widget.moduleId,
+        exerciseId: exercises[currentExerciseIndex].id,
+      );
+
+      final decodedResponse = jsonDecode(output);
+      final results = decodedResponse['results'] as List<dynamic>;
+
+      String formattedOutput = '';
+      for (var result in results) {
+        //formattedOutput += '${result['output']}\n';
+        formattedOutput += '${result['outputNew']}';
+        formattedOutput += '${result['expectedResult']}\n';
+        //formattedOutput += '${result['isCorrect']}\n\n';
+      }
+
+      setState(() {
+        _output = formattedOutput;
+      });
+
+      bool allCorrect = results.every((result) => result['isCorrect'] == true);
+      if (allCorrect) {
+        _showSuccessModal();
+      } else {
+        _showFailureModal();
+      }
+    } catch (error) {
+      setState(() {
+        _output = 'Error al ejecutar el código: $error';
+      });
+    } finally {
+      setState(() {
+        _isExecuting = false;
+      });
+    }
+  }
+
+  void _showSuccessModal() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return CustomDialog(
+          title: '¡Correcto!',
+          message: 'Has resuelto el ejercicio correctamente.',
+          icon: Iconsax.tick_circle,
+          iconColor: Colors.green,
+          buttonText: 'Continuar',
+          formattedOutput: _output,
+          onButtonPressed: () {
+            Navigator.pop(context);
+            _goToNextExercise();
+          }
+        );
       },
-      body: jsonEncode(<String, String>{
-        'language': language,
-        'code': code,
-      }),
     );
+  }
 
-    if (response.statusCode == 200) {
-      final output = jsonDecode(response.body)['output'];
+  void _showFailureModal() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return CustomDialog(
+          title: 'Incorrecto',
+          message: 'Tu código no ha pasado las pruebas. Revisa los resultados y vuelve a intentarlo.',
+          icon: Iconsax.close_circle,
+          iconColor: Colors.red,
+          buttonText: 'Volver a intentar',
+          formattedOutput: _output,
+          onButtonPressed: () {
+            Navigator.pop(context);
+          },
+        );
+      },
+    );
+  }
+
+  void _goToNextExercise() {
+    if (currentExerciseIndex < exercises.length - 1) {
       setState(() {
-        _output = output;
+        currentExerciseIndex++;
+        _output = '';
+        controller.clear();
       });
-      print('Output: $output');
     } else {
-      setState(() {
-        _output = 'Error: ${response.body}';
-      });
-      print('Error: ${response.body}');
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Row(
+              children: [
+                Icon(Iconsax.cake, color: Colors.green),
+                SizedBox(width: 8),
+                Text('¡Felicidades!')
+              ],
+            ),
+            content: const Text('Has completado todos los ejercicios de este nivel.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  Get.offAll(() => const HomeScreen());
+                },
+                child: const Text('Ir al inicio')
+              ),
+              TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+
+                    int nextLevel = widget.difficultyId + 1;
+
+                    if (nextLevel <= 3) {
+                      Get.off(() => CodeEditor(
+                        moduleId: widget.moduleId,
+                        difficultyId: nextLevel
+                      ));
+                    } else {
+                      Get.off(() => ModuleTheoryScreen(languageId: widget.moduleId));
+                    }
+                  },
+                  child: const Text('Siguiente nivel')
+              )
+            ],
+          );
+        },
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    // Asegúrate de que el controller no es null
-    if (controller == null) {
+    if (exercises.isEmpty) {
       return const Center(child: CircularProgressIndicator());
     }
 
+    final currentExercise = exercises[currentExerciseIndex];
+    final totalExercises = exercises.length;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Ejercicio en ${widget.languageName?.toUpperCase() ?? 'PYTHON'}'),
+        title: Text('Ejercicio ${currentExerciseIndex + 1} de $totalExercises'),
         centerTitle: true,
         actions: [
           IconButton(
@@ -98,35 +237,43 @@ class _CodeEditorState extends State<CodeEditor> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.lightBlue,
-                borderRadius: BorderRadius.circular(8.0),
-              ),
-              child: const Text(
-                'Implementa una función en Python llamada multiplicacion(val1, val2) que calcule la multiplicación entre dos números. La función debe imprimir el resultado de la multiplicación de val1 y val2.',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: TColors.primary,
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: Text(
+                  currentExercise.description,
+                  style: const TextStyle(fontSize: 18),
+                ),
               ),
             ),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0), // Ajuste del padding horizontal
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: CodeTheme(
                 data: CodeThemeData(styles: a11yLightTheme),
                 child: LayoutBuilder(
                   builder: (BuildContext context, BoxConstraints constraints) {
                     return SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
                       child: ConstrainedBox(
-                        constraints: BoxConstraints(minWidth: constraints.maxWidth),
+                        constraints: BoxConstraints(
+                          minWidth: constraints.maxWidth,
+                          maxWidth: constraints.maxWidth,
+                        ),
                         child: CodeField(
-                          controller: controller!,
-                          minLines: 20,
+                          controller: controller,
+                          minLines: 10,
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey),
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
                         ),
                       ),
                     );
@@ -134,26 +281,31 @@ class _CodeEditorState extends State<CodeEditor> {
                 ),
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: ElevatedButton(
-              onPressed: executeCode,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFFF6F61),
-                foregroundColor: Colors.white,
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: _isExecuting ? null : executeCode,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFFF6F61),
+                    foregroundColor: Colors.white,
+                  ),
+                  child: _isExecuting
+                      ? const SizedBox(
+                    height: 20.0,
+                    width: 20.0,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2.0,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                  )
+                      : const Text('Ejecutar código'),
+                ),
               ),
-              child: const Text('Ejecutar código'),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
-              _output,
-              style: const TextStyle(fontSize: 16, color: Colors.black87),
-            ),
-          ),
-        ],
+            )
+          ],
+        ),
       ),
     );
   }
