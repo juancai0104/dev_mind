@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dev_mind/features/module/screens/home/widgets/home_appbar.dart';
-import '../../../../common/widgets/modules/module_cards/module_card_java.dart';
-import '../../../../common/widgets/modules/module_cards/module_card_python.dart';
+import '../../../../common/widgets/modules/module_cards/module_cards_final.dart';
 import '../../../../utils/constants/image_strings.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -9,7 +8,6 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
@@ -35,9 +33,9 @@ class HomeScreen extends StatelessWidget {
             ],
           ),
           Positioned(
-            top: size.height * 0.3, // 30% de la altura de la pantalla
-            left: 16, // Espaciado lateral izquierdo fijo
-            right: 16, // Espaciado lateral derecho fijo
+            top: size.height * 0.3,
+            left: 16,
+            right: 16,
             child: GridView.count(
               shrinkWrap: true,
               crossAxisCount: 2,
@@ -46,8 +44,8 @@ class HomeScreen extends StatelessWidget {
               mainAxisSpacing: 20,
               physics: const NeverScrollableScrollPhysics(),
               children: const [
-                TModuleCardJava(),
-                TModuleCardPython(),
+                ModuleCard(languageId: 2),
+                ModuleCard(languageId: 1),
               ],
             ),
           ),
