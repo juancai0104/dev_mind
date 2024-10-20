@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:dev_mind/common/widgets/modules/dialogs/custom_dialog.dart';
-import 'package:dev_mind/features/module/screens/home/home.dart';
+import 'package:dev_mind/features/module/controllers/module/user_exercise_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_code_editor/flutter_code_editor.dart';
 import 'package:flutter_highlight/themes/a11y-light.dart';
@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 import 'package:highlight/languages/python.dart';
 import 'package:highlight/languages/javascript.dart';
 import 'package:iconsax/iconsax.dart';
+import '../../../../../navigation_menu.dart';
 import '../../../../../utils/constants/colors.dart';
 import '../../../controllers/module/code_editor_controller.dart';
 import '../../../controllers/module/exercise_controller.dart';
@@ -49,7 +50,9 @@ class _CodeEditorState extends State<CodeEditor> {
   Future<void> _loadExercises() async {
     try {
       ExerciseController exerciseController = ExerciseController();
-      exercises = await exerciseController.getByModuleIdAndDifficultyId(widget.moduleId, widget.difficultyId);
+
+      exercises = await exerciseController.getPendingExercises(1, widget.moduleId, widget.difficultyId);
+
       setState(() {
         if (exercises.isNotEmpty) {
           controller = CodeController(
@@ -135,9 +138,16 @@ class _CodeEditorState extends State<CodeEditor> {
           iconColor: Colors.green,
           buttonText: 'Continuar',
           formattedOutput: _output,
-          onButtonPressed: () {
+          onButtonPressed: () async {
             Navigator.pop(context);
-            _goToNextExercise();
+
+            UserExerciseController userExerciseController = Get.put(UserExerciseController());
+            print(exercises[currentExerciseIndex].id);
+            await userExerciseController.saveUserExercise(1, exercises[currentExerciseIndex].id);
+
+            if(mounted) {
+              _goToNextExercise();
+            }
           }
         );
       },
@@ -187,7 +197,7 @@ class _CodeEditorState extends State<CodeEditor> {
               TextButton(
                 onPressed: () {
                   Navigator.pop(context);
-                  Get.offAll(() => const HomeScreen());
+                  Get.offAll(() => const NavigationMenu());
                 },
                 child: const Text('Ir al inicio')
               ),

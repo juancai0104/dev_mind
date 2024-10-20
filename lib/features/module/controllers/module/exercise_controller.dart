@@ -1,18 +1,18 @@
 import 'package:dev_mind/features/module/models/exercise.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import '../../../../utils/http/http_client.dart';
 
 class ExerciseController {
-  Future<List<Exercise>> getByModuleIdAndDifficultyId(int moduleId, int difficultyId) async {
-    final response = await http.get(
-      Uri.parse('http://10.0.2.2:3000/api/exercises/$moduleId/$difficultyId'),
-    );
+  Future<List<Exercise>> getPendingExercises(int userId, int moduleId, int difficultyId) async {
+    try {
+      final data = await THttpHelper.get('exercises/$userId/$moduleId/$difficultyId');
 
-    if (response.statusCode == 200) {
-      List<dynamic> jsonData = jsonDecode(response.body);
-      return jsonData.map((json) => Exercise.fromJson(json)).toList();
-    } else {
-      throw Exception('Failed to load exercises');
+      if (data is List) {
+        return data.map((json) => Exercise.fromJson(json)).toList();
+      } else {
+        throw Exception('Unexpected data format, expected a list');
+      }
+    } catch (e) {
+      throw Exception('Failed to load incomplete exercises: $e');
     }
   }
 }

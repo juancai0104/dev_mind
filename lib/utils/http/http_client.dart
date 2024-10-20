@@ -2,9 +2,9 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class THttpHelper {
-  static const String _baseUrl = 'https://localhost:300';
+  static const String _baseUrl = 'http://10.0.2.2:3000/api';
 
-  static Future<Map<String, dynamic>> get(String endpoint) async {
+  static Future<dynamic> get(String endpoint) async {
     final response = await http.get(Uri.parse('$_baseUrl/$endpoint'));
     return _handleResponse(response);
   }
@@ -32,9 +32,21 @@ class THttpHelper {
     return _handleResponse(response);
   }
 
-  static Map<String, dynamic> _handleResponse(http.Response response) {
-    if(response.statusCode == 200) {
-      return json.decode(response.body);
+  static dynamic _handleResponse(http.Response response) {
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      if (response.body.isNotEmpty) {
+        final decodedResponse = json.decode(response.body);
+
+        if (decodedResponse is List) {
+          return decodedResponse;
+        } else if (decodedResponse is Map) {
+          return decodedResponse;
+        } else {
+          throw Exception('Unexpected response format');
+        }
+      } else {
+        return {};
+      }
     } else {
       throw Exception('Failed to load data: ${response.statusCode}');
     }
