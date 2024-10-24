@@ -107,7 +107,10 @@ class ModuleTheoryScreen extends StatelessWidget {
                           backgroundColor: TColors.intermediate,
                           side: const BorderSide(color: TColors.intermediate),
                         ),
-                        onPressed: (){},
+                        onPressed: () => Get.to(() => CodeEditor(
+                          moduleId: module.moduleId,
+                          difficultyId: 2,
+                        )),
                         child: const Text(TTexts.intermediate)
                     ),
                   ),
@@ -119,7 +122,10 @@ class ModuleTheoryScreen extends StatelessWidget {
                           backgroundColor: TColors.advanced,
                           side: const BorderSide(color: TColors.advanced),
                         ),
-                        onPressed: (){},
+                        onPressed: () => Get.to(() => CodeEditor(
+                          moduleId: module.moduleId,
+                          difficultyId: 3,
+                        )),
                         child: const Text(TTexts.advanced)
                     ),
                   ),
