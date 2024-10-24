@@ -1,4 +1,12 @@
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+
+import '../../features/authentication/controllers/auth_controller.dart';
+
 class TTexts {
+
+
+
 
   // Login
   static const String loginTitle = "¡Nos alegra verte!";
@@ -23,6 +31,7 @@ class TTexts {
   static const String firstName = "Nombres";
   static const String lastName = "Apellidos";
   static const String username = "Nombre de Usuario";
+  static const String phoneNumber = "Numero de telefono";
 
   static const String email = "Correo Electrónico";
   static const String password = "Contraseña";
@@ -52,7 +61,7 @@ class TTexts {
   static const String done = "Listo";
 
   // Home
-  static const String homeAppbarTitleWave = "Hola Juan";
+  static const String homeAppbarTitleWave = "Hola, "; // Placeholder para el nombre del usuario
   static const String homeAppbarSubtitleMotivational = "¡Empecemos a programar! \n👋🏼😎👨‍💻" ;
 
   static const String EditAppbarTitle = "Tu cuenta 🤓🔏";
@@ -70,4 +79,5 @@ class TTexts {
   static const String appSettingsTitle = "Configuración de la Aplicación";
   static const String settingsPreferencesTitle = "Cambio de tema";
   static const String settingsPreferencesSubtitle = "Elige el estilo visual que prefieras";
+  static const String logout = "Cerrar Sesión ✖️";
 }

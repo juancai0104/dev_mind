@@ -6,13 +6,23 @@ import 'package:iconsax/iconsax.dart';
 import '../../../../../navigation_menu.dart';
 import '../../../../../utils/constants/sizes.dart';
 import '../../../../../utils/constants/text_strings.dart';
+import '../../../controllers/auth_controller.dart';
 import '../../password_configuration/forget_password.dart';
 import '../../signup/signup.dart';
 
-class TLoginForm extends StatelessWidget {
-  const TLoginForm({
-    super.key,
-  });
+class TLoginForm extends StatefulWidget {
+  TLoginForm({super.key});
+
+  @override
+  _TLoginFormState createState() => _TLoginFormState();
+}
+
+class _TLoginFormState extends State<TLoginForm> {
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+  final authController = Get.find<AuthController>();
+
+  bool _isPasswordVisible = false; // Variable para controlar la visibilidad
 
   @override
   Widget build(BuildContext context) {
@@ -23,19 +33,30 @@ class TLoginForm extends StatelessWidget {
           children: [
             // Email
             TextFormField(
+              controller: emailController,
               decoration: const InputDecoration(
-                  prefixIcon: Icon(Iconsax.user),
-                  labelText: TTexts.email
+                prefixIcon: Icon(Iconsax.user),
+                labelText: TTexts.email,
               ),
             ),
             const SizedBox(height: TSizes.spaceBtwInputFields),
 
             // Password
             TextFormField(
-              decoration: const InputDecoration(
-                  prefixIcon: Icon(Iconsax.password_check),
-                  labelText: TTexts.password,
-                  suffixIcon: Icon(Iconsax.eye_slash)
+              controller: passwordController,
+              obscureText: !_isPasswordVisible, // Ocultar o mostrar contraseña
+              decoration: InputDecoration(
+                labelText: TTexts.password,
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _isPasswordVisible ? Iconsax.eye : Iconsax.eye_slash,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _isPasswordVisible = !_isPasswordVisible; // Cambiar estado
+                    });
+                  },
+                ),
               ),
             ),
             const SizedBox(height: TSizes.spaceBtwInputFields / 2),
@@ -44,21 +65,13 @@ class TLoginForm extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Remember me
-                Row(
-                  children: [
-                    Checkbox(value: false, onChanged: (value){}),
-                    const Text(TTexts.rememberMe)
-                  ],
-                ),
-
                 // Forget password
                 TextButton(
                   onPressed: () => Get.to(() => const ForgetPassword()),
                   child: const Text(
                     TTexts.forgetPassword,
                     style: TextStyle(color: TColors.accent),
-                  )
+                  ),
                 ),
               ],
             ),
@@ -67,14 +80,28 @@ class TLoginForm extends StatelessWidget {
             // Sign In button
             SizedBox(
               width: double.infinity,
-              child: ElevatedButton(onPressed: () => Get.to(() => const NavigationMenu()), child: const Text(TTexts.signIn)),
+              child: ElevatedButton(
+                onPressed: () {
+                  final email = emailController.text.trim();
+                  final password = passwordController.text.trim();
+                  if (email.isNotEmpty && password.isNotEmpty) {
+                    authController.login(email, password);
+                  } else {
+                    Get.snackbar("Error", "Por favor, rellena todos los campos.");
+                  }
+                },
+                child: const Text(TTexts.signIn),
+              ),
             ),
             const SizedBox(height: TSizes.spaceBtwItems),
 
             // Create account button
             SizedBox(
               width: double.infinity,
-              child: OutlinedButton(onPressed: () => Get.to(() => const SignupScreen()), child: const Text(TTexts.createAccount)),
+              child: OutlinedButton(
+                onPressed: () => Get.to(() => const SignupScreen()),
+                child: const Text(TTexts.createAccount),
+              ),
             ),
           ],
         ),

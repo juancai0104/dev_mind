@@ -8,10 +8,9 @@ import 'package:get/get.dart';
 import '../../../../features/module/screens/modules/module_theory.dart';
 import '../../../../utils/constants/colors.dart';
 import '../../../../utils/constants/sizes.dart';
-import '../../../styles/shadows.dart';
 
 class ModuleCard extends StatelessWidget {
-  final int languageId; // 1 for Python, 2 for JavaScript
+  final int languageId;
 
   const ModuleCard({super.key, required this.languageId});
 

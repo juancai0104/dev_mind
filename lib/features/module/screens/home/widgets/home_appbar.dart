@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../../../../../common/widgets/appbar/appbar.dart';
 import '../../../../../utils/constants/colors.dart';
 import '../../../../../utils/constants/text_strings.dart';
+import '../../../../authentication/controllers/auth_controller.dart';
 
 class THomeAppBar extends StatelessWidget {
   const THomeAppBar({
@@ -33,6 +35,7 @@ class _CurvedHeaderState extends State<CurvedHeader> with SingleTickerProviderSt
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
   late Animation<double> _curveOpacityAnimation;
+  final authController = Get.find<AuthController>();
 
   @override
   void initState() {
@@ -75,6 +78,8 @@ class _CurvedHeaderState extends State<CurvedHeader> with SingleTickerProviderSt
 
   @override
   Widget build(BuildContext context) {
+    final userName = authController.currentUser.value?.username ?? "Usuario";
+
     return SizedBox(
       height: 350.0,
       child: Stack(
@@ -105,9 +110,9 @@ class _CurvedHeaderState extends State<CurvedHeader> with SingleTickerProviderSt
                     position: _slideAnimation,
                     child: FadeTransition(
                       opacity: _fadeAnimation,
-                      child: const Text(
-                        TTexts.homeAppbarTitleWave,
-                        style: TextStyle(
+                      child: Text(
+                        'Hola $userName', // Saludo con el nombre del usuario
+                        style: const TextStyle(
                           fontSize: 27,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,

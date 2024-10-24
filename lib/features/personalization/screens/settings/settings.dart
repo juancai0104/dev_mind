@@ -9,6 +9,7 @@ import '../../../../utils/constants/sizes.dart';
 import '../../../../utils/constants/text_strings.dart';
 import '../../../../utils/local_storage/storage_utility.dart';
 import '../../../authentication/screens/edit_profile/edit_profile.dart';
+import '../../../authentication/controllers/auth_controller.dart'; // Importa el controlador
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -20,6 +21,7 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   final TLocalStorage _localStorage = TLocalStorage();
   bool isDarkMode = false;
+  final authController = Get.find<AuthController>();
 
   @override
   void initState() {
@@ -48,7 +50,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     icon: Iconsax.safe_home,
                     title: TTexts.settingsMyProfileTitle,
                     subTitle: TTexts.settingsMyProfileSubtitle,
-                    onTap: () => Get.to(() => const EditProfile())
+                    onTap: () => Get.to(() => const EditProfile()),
                   ),
                   const SizedBox(height: TSizes.spaceBtwSections),
                   const TSectionHeading(
@@ -57,23 +59,46 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                   const SizedBox(height: TSizes.spaceBtwItems),
                   TSettingsMenuTile(
-                      icon: Iconsax.document_favorite,
-                      title: TTexts.settingsPreferencesTitle,
-                      subTitle: TTexts.settingsPreferencesSubtitle,
-                      trailing: Switch(
-                        value: isDarkMode,
-                        activeColor: TColors.primary,
-                        inactiveThumbColor: TColors.accent,
-                        onChanged: (value){
-                          setState(() {
-                            isDarkMode = value;
-                          });
-                          _changeTheme(value);
-                        }),
+                    icon: Iconsax.document_favorite,
+                    title: TTexts.settingsPreferencesTitle,
+                    subTitle: TTexts.settingsPreferencesSubtitle,
+                    trailing: Switch(
+                      value: isDarkMode,
+                      activeColor: TColors.primary,
+                      inactiveThumbColor: TColors.accent,
+                      onChanged: (value) {
+                        setState(() {
+                          isDarkMode = value;
+                        });
+                        _changeTheme(value);
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: TSizes.spaceBtwSections),
+
+                  // Botón de cerrar sesión
+                  ElevatedButton.icon(
+                    icon: const Icon(Iconsax.logout, size: 28), // Icono más grande
+                    label: const Text(
+                      TTexts.logout,
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold), // Texto en negrita
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: TColors.accent, // Color del fondo
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30), // Esquinas redondeadas
+                      ),
+                      elevation: 5, // Sombra para el efecto de elevación
+                      shadowColor: Colors.black.withOpacity(0.3), // Color de la sombra
+                    ),
+                    onPressed: () {
+                      authController.logout();
+                    },
                   ),
                 ],
               ),
-            )
+            ),
           ],
         ),
       ),

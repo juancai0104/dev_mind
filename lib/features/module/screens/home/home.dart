@@ -44,8 +44,8 @@ class HomeScreen extends StatelessWidget {
               mainAxisSpacing: 20,
               physics: const NeverScrollableScrollPhysics(),
               children: const [
-                ModuleCard(languageId: 2),
                 ModuleCard(languageId: 1),
+                ModuleCard(languageId: 2),
               ],
             ),
           ),
