@@ -43,6 +43,9 @@ class _CodeEditorState extends State<CodeEditor> {
   @override
   void initState() {
     super.initState();
+    print("Inicializando CodeEditor para difficultyId: ${widget.difficultyId}");
+    allExercisesCompleted = false;
+    currentExerciseIndex = 0;
     _loadExercises();
     controller = CodeController(
       text: '',
@@ -56,16 +59,13 @@ class _CodeEditorState extends State<CodeEditor> {
 
       final userId = authController.currentUser.value?.id ?? 1;
 
+      print("Difficulty ${widget.difficultyId}");
       exercises = await exerciseController.getPendingExercises(userId, widget.moduleId, widget.difficultyId);
 
       setState(() {
         if (exercises.isEmpty) {
           allExercisesCompleted = true;
           _showLevelCompletionModal();
-          controller = CodeController(
-            text: '',
-            language: _getLanguage(widget.moduleId),
-          );
         } else {
           allExercisesCompleted = false;
         }
@@ -110,23 +110,21 @@ class _CodeEditorState extends State<CodeEditor> {
     await userExerciseController.resetUserLevelExercises(userId, widget.moduleId, widget.difficultyId);
 
     setState(() {
-      exercises = []; // Limpia la lista de ejercicios
-      allExercisesCompleted = false; // Permitir que el nivel se restablezca
-      _loadExercises(); // Cargar los ejercicios de nuevo
+      allExercisesCompleted = false;
+      currentExerciseIndex = 0;
     });
+    _loadExercises();
   }
 
   void _goToNextLevel() {
     int nextDifficulty = widget.difficultyId + 1;
 
     if (nextDifficulty <= 3) {
-      // Verificar si el siguiente nivel tiene ejercicios pendientes
-      Get.off(() => CodeEditor(
+      Get.offAll(() => CodeEditor(
         moduleId: widget.moduleId,
         difficultyId: nextDifficulty,
       ));
     } else {
-      // Si el usuario ya completó todos los niveles
       _showAllLevelsCompletedModal();
     }
   }

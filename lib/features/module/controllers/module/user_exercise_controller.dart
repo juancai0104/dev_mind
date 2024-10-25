@@ -16,11 +16,8 @@ class UserExerciseController extends GetxController {
 
   Future<void> resetUserLevelExercises(int userId, int moduleId, int difficultyId) async {
     try {
-      await THttpHelper.delete('user-exercises/reset-level', data: {
-        'userId': userId,
-        'moduleId': moduleId,
-        'difficultyId': difficultyId,
-      });
+      final endpoint = 'user-exercises/$userId/$moduleId/$difficultyId';
+      await THttpHelper.delete(endpoint);
       Get.snackbar('Éxito', 'Nivel restablecido correctamente.');
     } catch (e) {
       Get.snackbar('Error', 'No se pudo restablecer el nivel.');
