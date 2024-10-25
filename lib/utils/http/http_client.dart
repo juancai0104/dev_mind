@@ -27,8 +27,19 @@ class THttpHelper {
     return _handleResponse(response);
   }
 
-  static Future<Map<String, dynamic>> delete(String endpoint) async {
-    final response = await http.delete(Uri.parse('$_baseUrl/$endpoint'));
+  static Future<Map<String, dynamic>> delete(String endpoint, {dynamic data}) async {
+    final url = Uri.parse('$_baseUrl/$endpoint');
+
+    final request = http.Request('DELETE', url);
+    request.headers['Content-Type'] = 'application/json';
+
+    if (data != null) {
+      request.body = json.encode(data);
+    }
+
+    final streamedResponse = await request.send();
+    final response = await http.Response.fromStream(streamedResponse);
+
     return _handleResponse(response);
   }
 

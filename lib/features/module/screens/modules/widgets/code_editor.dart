@@ -38,15 +38,12 @@ class _CodeEditorState extends State<CodeEditor> {
   bool _isExecuting = false;
   int currentExerciseIndex = 0;
   List<Exercise> exercises = [];
+  bool allExercisesCompleted = false;
 
   @override
   void initState() {
     super.initState();
     _loadExercises();
-    controller = CodeController(
-      text: '',
-      language: _getLanguage(widget.moduleId),
-    );
   }
 
   Future<void> _loadExercises() async {
@@ -58,16 +55,93 @@ class _CodeEditorState extends State<CodeEditor> {
       exercises = await exerciseController.getPendingExercises(userId, widget.moduleId, widget.difficultyId);
 
       setState(() {
-        if (exercises.isNotEmpty) {
-          controller = CodeController(
-            text: '',
-            language: _getLanguage(widget.moduleId),
-          );
+        if (exercises.isEmpty) {
+          allExercisesCompleted = true;
+          _showLevelCompletionModal();
+        } else {
+          allExercisesCompleted = false;
         }
       });
     } catch (e) {
       print('Error loading exercises: $e');
     }
+  }
+
+  void _showLevelCompletionModal() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('¡Nivel completado!'),
+          content: const Text('Has completado todos los ejercicios de este nivel. ¿Quieres avanzar al siguiente nivel o restablecer este nivel?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                _resetLevel();
+              },
+              child: const Text('Restablecer nivel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                _goToNextLevel();
+              },
+              child: const Text('Siguiente nivel'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _resetLevel() async {
+    UserExerciseController userExerciseController = Get.put(UserExerciseController());
+    final userId = authController.currentUser.value?.id ?? 1;
+
+    await userExerciseController.resetUserLevelExercises(userId, widget.moduleId, widget.difficultyId);
+
+    setState(() {
+      exercises = []; // Limpia la lista de ejercicios
+      allExercisesCompleted = false; // Permitir que el nivel se restablezca
+      _loadExercises(); // Cargar los ejercicios de nuevo
+    });
+  }
+
+  void _goToNextLevel() {
+    int nextDifficulty = widget.difficultyId + 1;
+
+    if (nextDifficulty <= 3) {
+      // Verificar si el siguiente nivel tiene ejercicios pendientes
+      Get.off(() => CodeEditor(
+        moduleId: widget.moduleId,
+        difficultyId: nextDifficulty,
+      ));
+    } else {
+      // Si el usuario ya completó todos los niveles
+      _showAllLevelsCompletedModal();
+    }
+  }
+
+  void _showAllLevelsCompletedModal() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('¡Felicidades!'),
+          content: const Text('Has completado todos los ejercicios de todos los niveles.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                Get.offAll(() => const NavigationMenu());
+              },
+              child: const Text('Volver al inicio'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   dynamic _getLanguage(int moduleId) {
@@ -185,6 +259,8 @@ class _CodeEditorState extends State<CodeEditor> {
         controller.clear();
       });
     } else {
+      int nextLevel = widget.difficultyId + 1;
+
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -196,7 +272,9 @@ class _CodeEditorState extends State<CodeEditor> {
                 Text('¡Felicidades!')
               ],
             ),
-            content: const Text('Has completado todos los ejercicios de este nivel.'),
+            content: nextLevel <= 3
+              ? const Text('Has completado todos los ejercicios de este nivel. ¿Quieres continuar al siguiente nivel o volver al inicio?')
+              : const Text('¡Felicidades! Has completado todos los niveles. ¿Quieres volver al inicio o restablecer el nivel?'),
             actions: [
               TextButton(
                 onPressed: () {
@@ -205,23 +283,39 @@ class _CodeEditorState extends State<CodeEditor> {
                 },
                 child: const Text('Ir al inicio')
               ),
-              TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
+              if(nextLevel <= 3)
+                TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
 
-                    int nextLevel = widget.difficultyId + 1;
+                      //int nextLevel = widget.difficultyId + 1;
 
-                    if (nextLevel <= 3) {
                       Get.off(() => CodeEditor(
                         moduleId: widget.moduleId,
                         difficultyId: nextLevel
                       ));
-                    } else {
-                      Get.off(() => ModuleTheoryScreen(languageId: widget.moduleId));
-                    }
+
+                    },
+                    child: const Text('Siguiente nivel')
+                )
+              else
+                TextButton(
+                  onPressed: () async {
+                    Navigator.pop(context);
+
+                    UserExerciseController userExerciseController = Get.put(UserExerciseController());
+                    final userId = authController.currentUser.value?.id ?? 1;
+
+                    await userExerciseController.resetUserLevelExercises(userId, widget.moduleId, widget.difficultyId);
+
+                    setState(() {
+                      currentExerciseIndex = 0;
+                      _output = '';
+                      controller.clear();
+                    });
                   },
-                  child: const Text('Siguiente nivel')
-              )
+                  child: const Text('Restablecer nivel'),
+                ),
             ],
           );
         },
@@ -231,6 +325,10 @@ class _CodeEditorState extends State<CodeEditor> {
 
   @override
   Widget build(BuildContext context) {
+    if (allExercisesCompleted) {
+      return const Center(child: Text('Todos los ejercicios de este nivel están completados.'));
+    }
+
     if (exercises.isEmpty) {
       return const Center(child: CircularProgressIndicator());
     }
