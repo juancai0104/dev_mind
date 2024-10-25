@@ -44,6 +44,10 @@ class _CodeEditorState extends State<CodeEditor> {
   void initState() {
     super.initState();
     _loadExercises();
+    controller = CodeController(
+      text: '',
+      language: _getLanguage(widget.moduleId),
+    );
   }
 
   Future<void> _loadExercises() async {
@@ -58,6 +62,10 @@ class _CodeEditorState extends State<CodeEditor> {
         if (exercises.isEmpty) {
           allExercisesCompleted = true;
           _showLevelCompletionModal();
+          controller = CodeController(
+            text: '',
+            language: _getLanguage(widget.moduleId),
+          );
         } else {
           allExercisesCompleted = false;
         }
