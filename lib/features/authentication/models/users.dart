@@ -1,4 +1,5 @@
 class User {
+  final int? id;
   final String? googleId;
   final String fullName;
   final String username;
@@ -7,6 +8,7 @@ class User {
   final String? password;
 
   User({
+    this.id,
     this.googleId,
     required this.fullName,
     required this.username,
@@ -17,6 +19,7 @@ class User {
 
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'googleId': googleId,
       'fullName': fullName,
       'username': username,
@@ -28,6 +31,7 @@ class User {
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
+      id: json['id'],
       googleId: json['googleId'],
       fullName: json['fullName'],
       username: json['username'],

@@ -11,6 +11,7 @@ import 'package:highlight/languages/javascript.dart';
 import 'package:iconsax/iconsax.dart';
 import '../../../../../navigation_menu.dart';
 import '../../../../../utils/constants/colors.dart';
+import '../../../../authentication/controllers/auth_controller.dart';
 import '../../../controllers/module/code_editor_controller.dart';
 import '../../../controllers/module/exercise_controller.dart';
 import '../../../models/exercise.dart';
@@ -31,6 +32,7 @@ class CodeEditor extends StatefulWidget {
 }
 
 class _CodeEditorState extends State<CodeEditor> {
+  final AuthController authController = Get.find<AuthController>();
   String _output = '';
   late CodeController controller;
   bool _isExecuting = false;
@@ -51,7 +53,9 @@ class _CodeEditorState extends State<CodeEditor> {
     try {
       ExerciseController exerciseController = ExerciseController();
 
-      exercises = await exerciseController.getPendingExercises(1, widget.moduleId, widget.difficultyId);
+      final userId = authController.currentUser.value?.id ?? 1;
+
+      exercises = await exerciseController.getPendingExercises(userId, widget.moduleId, widget.difficultyId);
 
       setState(() {
         if (exercises.isNotEmpty) {
@@ -142,8 +146,8 @@ class _CodeEditorState extends State<CodeEditor> {
             Navigator.pop(context);
 
             UserExerciseController userExerciseController = Get.put(UserExerciseController());
-            print(exercises[currentExerciseIndex].id);
-            await userExerciseController.saveUserExercise(1, exercises[currentExerciseIndex].id);
+            final userId = authController.currentUser.value?.id ?? 1;
+            await userExerciseController.saveUserExercise(userId, exercises[currentExerciseIndex].id);
 
             if(mounted) {
               _goToNextExercise();
