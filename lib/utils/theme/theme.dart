@@ -1,3 +1,4 @@
+import 'package:dev_mind/utils/theme/custom_themes/dialog_theme.dart';
 import 'package:flutter/material.dart';
 
 import 'custom_themes/appbar_theme.dart';
@@ -27,7 +28,8 @@ class TAppTheme {
     bottomSheetTheme: TBottomSheetTheme.lightBottomSheetTheme,
     elevatedButtonTheme: TElevatedButtonTheme.lightElevatedButtonTheme,
     outlinedButtonTheme: TOutlineButtonTheme.lightOutlineButtonTheme,
-    inputDecorationTheme: TTextFormFieldTheme.lightInputDecorationTheme
+    inputDecorationTheme: TTextFormFieldTheme.lightInputDecorationTheme,
+    dialogTheme: TDialogTheme.lightDialogTheme
   );
 
   // Config dark theme
@@ -44,6 +46,7 @@ class TAppTheme {
     bottomSheetTheme: TBottomSheetTheme.darkBottomSheetTheme,
     elevatedButtonTheme: TElevatedButtonTheme.darkElevatedButtonTheme,
     outlinedButtonTheme: TOutlineButtonTheme.darkOutlineButtonTheme,
-    inputDecorationTheme: TTextFormFieldTheme.darkInputDecorationTheme
+    inputDecorationTheme: TTextFormFieldTheme.darkInputDecorationTheme,
+    dialogTheme: TDialogTheme.darkDialogTheme
   );
 }

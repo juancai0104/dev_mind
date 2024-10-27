@@ -15,7 +15,6 @@ import '../../../../authentication/controllers/auth_controller.dart';
 import '../../../controllers/module/code_editor_controller.dart';
 import '../../../controllers/module/exercise_controller.dart';
 import '../../../models/exercise.dart';
-import '../module_theory.dart';
 
 class CodeEditor extends StatefulWidget {
   final int moduleId;
@@ -43,7 +42,6 @@ class _CodeEditorState extends State<CodeEditor> {
   @override
   void initState() {
     super.initState();
-    print("Inicializando CodeEditor para difficultyId: ${widget.difficultyId}");
     allExercisesCompleted = false;
     currentExerciseIndex = 0;
     _loadExercises();
@@ -80,14 +78,24 @@ class _CodeEditorState extends State<CodeEditor> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('¡Nivel completado!'),
-          content: const Text('Has completado todos los ejercicios de este nivel. ¿Quieres avanzar al siguiente nivel o restablecer este nivel?'),
+          title: const Row(
+            children: [
+              Icon(Iconsax.cup, color: TColors.accent, size: 28),
+              SizedBox(width: 8),
+              Text('¡Nivel completado!'),
+            ],
+          ),
+          content: const Text(
+            'Has completado todos los ejercicios de este nivel. '
+            '¿Quieres avanzar al siguiente nivel o restablecer este nivel?'
+          ),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
                 _resetLevel();
               },
+              style: TextButton.styleFrom(foregroundColor: TColors.accent),
               child: const Text('Restablecer nivel'),
             ),
             TextButton(
@@ -95,6 +103,7 @@ class _CodeEditorState extends State<CodeEditor> {
                 Navigator.pop(context);
                 _goToNextLevel();
               },
+              style: TextButton.styleFrom(foregroundColor: TColors.accent),
               child: const Text('Siguiente nivel'),
             ),
           ],
@@ -134,7 +143,13 @@ class _CodeEditorState extends State<CodeEditor> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('¡Felicidades!'),
+          title: const Row(
+            children: [
+              Icon(Iconsax.cake, color: TColors.accent, size: 28),
+              SizedBox(width: 8),
+              Text('¡Felicidades!'),
+            ],
+          ),
           content: const Text('Has completado todos los ejercicios de todos los niveles.'),
           actions: [
             TextButton(
@@ -142,6 +157,7 @@ class _CodeEditorState extends State<CodeEditor> {
                 Navigator.pop(context);
                 Get.offAll(() => const NavigationMenu());
               },
+              style: TextButton.styleFrom(foregroundColor: TColors.accent),
               child: const Text('Volver al inicio'),
             ),
           ],
@@ -287,6 +303,7 @@ class _CodeEditorState extends State<CodeEditor> {
                   Navigator.pop(context);
                   Get.offAll(() => const NavigationMenu());
                 },
+                style: TextButton.styleFrom(foregroundColor: TColors.accent),
                 child: const Text('Ir al inicio')
               ),
               if(nextLevel <= 3)
@@ -302,6 +319,7 @@ class _CodeEditorState extends State<CodeEditor> {
                       ));
 
                     },
+                    style: TextButton.styleFrom(foregroundColor: TColors.accent),
                     child: const Text('Siguiente nivel')
                 )
               else
@@ -320,6 +338,7 @@ class _CodeEditorState extends State<CodeEditor> {
                       controller.clear();
                     });
                   },
+                  style: TextButton.styleFrom(foregroundColor: TColors.accent),
                   child: const Text('Restablecer nivel'),
                 ),
             ],
@@ -332,7 +351,22 @@ class _CodeEditorState extends State<CodeEditor> {
   @override
   Widget build(BuildContext context) {
     if (allExercisesCompleted) {
-      return const Center(child: Text('Todos los ejercicios de este nivel están completados.'));
+      return Container(
+        color: TColors.primary,
+        child: const Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.check_circle_outline, size: 80, color: Colors.green),
+              SizedBox(height: 16),
+              Text(
+                '¡Nivel completado!',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+        ),
+      );
     }
 
     if (exercises.isEmpty) {
@@ -350,7 +384,8 @@ class _CodeEditorState extends State<CodeEditor> {
           IconButton(
             icon: const Icon(Icons.close),
             onPressed: () {
-              Navigator.pop(context);
+              //Navigator.pop(context);
+              Get.offAll(() => const NavigationMenu());
             },
           ),
         ],
