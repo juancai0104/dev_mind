@@ -198,13 +198,9 @@ class _CodeEditorState extends State<CodeEditor> {
       final decodedResponse = jsonDecode(output);
       final results = decodedResponse['results'] as List<dynamic>;
 
-      String formattedOutput = '';
-      for (var result in results) {
-        //formattedOutput += '${result['output']}\n';
-        formattedOutput += '${result['outputNew']}';
-        formattedOutput += '${result['expectedResult']}\n';
-        //formattedOutput += '${result['isCorrect']}\n\n';
-      }
+      String formattedOutput = results.map((result) {
+        return 'Salida: ${result['outputNew'].trim()}\nPrevisto: ${result['expectedResult']}';
+      }).join('\n\n');
 
       setState(() {
         _output = formattedOutput;
@@ -313,7 +309,7 @@ class _CodeEditorState extends State<CodeEditor> {
 
                       //int nextLevel = widget.difficultyId + 1;
 
-                      Get.off(() => CodeEditor(
+                      Get.offAll(() => CodeEditor(
                         moduleId: widget.moduleId,
                         difficultyId: nextLevel
                       ));

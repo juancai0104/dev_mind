@@ -57,48 +57,53 @@ class CustomDialog extends StatelessWidget {
   }
 
   Widget _buildFormattedOutput() {
-    return RichText(
-      text: TextSpan(
-        style: const TextStyle(fontSize: 14, color: Colors.black),
-        children: [
-          const TextSpan(
-            text: 'Resultados:\n\n',
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-          ),
-          /*const TextSpan(
-            text: 'Output: ',
-            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueGrey),
-          ),
-          TextSpan(
-            text: '${formattedOutput?.split('\n')[0]}\n',
-            style: const TextStyle(color: Colors.black),
-          ),*/
-          const TextSpan(
-            text: 'Salida: ',
-            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueGrey),
-          ),
-          TextSpan(
-            text: '${formattedOutput?.split('\n')[0]}\n',
-            style: const TextStyle(color: Colors.black),
-          ),
-          const TextSpan(
-            text: 'Previsto: ',
-            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueGrey),
-          ),
-          TextSpan(
-            text: '${formattedOutput?.split('\n')[1]}\n',
-            style: const TextStyle(color: Colors.black),
-          ),
-          /*const TextSpan(
-            text: 'Correct: ',
-            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueGrey),
-          ),
-          TextSpan(
-            text: '${formattedOutput?.split('\n')[3]}\n',
-            style: const TextStyle(color: Colors.black),
-          ),*/
-        ],
-      ),
+    final resultLines = formattedOutput!.split('\n\n');
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Resultados:',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        ),
+        const SizedBox(height: 10),
+        ...resultLines.map((line) {
+          final lines = line.split('\n');
+          final outputText = lines.isNotEmpty ? lines[0].replaceFirst('Salida: ', '') : 'Salida no disponible';
+          final expectedText = lines.length > 1 ? lines[1].replaceFirst('Previsto: ', '') : 'Resultado previsto no disponible';
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              RichText(
+                text: TextSpan(
+                  style: const TextStyle(fontSize: 14, color: Colors.black),
+                  children: [
+                    const TextSpan(
+                      text: 'Salida: ',
+                      style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueGrey),
+                    ),
+                    TextSpan(
+                      text: outputText,
+                      style: const TextStyle(color: Colors.black),
+                    ),
+                    const TextSpan(text: '\n'),
+                    const TextSpan(
+                      text: 'Previsto: ',
+                      style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blueGrey),
+                    ),
+                    TextSpan(
+                      text: expectedText,
+                      style: const TextStyle(color: Colors.black),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 10),
+            ],
+          );
+        }).toList(),
+      ],
     );
   }
 }
