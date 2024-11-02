@@ -16,18 +16,19 @@ class AuthController extends GetxController {
   var errorMessage = ''.obs;
   var isAuthenticated = false.obs;
 
-  // Configuración
+  // Variables de configuración
   final String apiUrl = 'http://10.0.2.2:3000/api/auth';
   final String apiUrlUpdate = 'http://10.0.2.2:3000/api/users';
   final Duration timeout = const Duration(seconds: 10);
 
-  // Headers comunes para las peticiones
+
+  // Encabezados de las peticiones HTTP
   Map<String, String> get _headers => {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
   };
 
-  // Método para registrar un nuevo usuario
+// Métodos para autenticación
   Future<void> signup(User user) async {
     isLoading.value = true;
     errorMessage.value = '';
@@ -128,7 +129,7 @@ class AuthController extends GetxController {
       isLoading.value = false;
     }
   }
-
+// Métodos para actualizar el perfil de usuario
   Future<void> updateUserProfile(User user) async {
     isLoading.value = true;
     errorMessage.value = '';
@@ -153,7 +154,7 @@ class AuthController extends GetxController {
       isLoading.value = false;
     }
   }
-
+// Método para actualizar la contraseña del usuario
   Future<void> updateUserPassword(String currentPassword, String newPassword) async {
     isLoading.value = true;
     errorMessage.value = '';
@@ -183,7 +184,7 @@ class AuthController extends GetxController {
     }
   }
 
-
+// Método para autenticación con Google
   Future<void> googleAuth() async {
     try {
       final response = await http.get(
@@ -217,7 +218,7 @@ class AuthController extends GetxController {
       backgroundColor: TColors.error,
     );
   }
-
+  // Método para manejar errores de tiempo de espera
   void _handleTimeout() {
     errorMessage.value = 'La operación tardó demasiado tiempo';
     Get.snackbar(
@@ -226,7 +227,7 @@ class AuthController extends GetxController {
       snackPosition: SnackPosition.TOP,
     );
   }
-
+// Método para manejar excepciones
   void _handleException(dynamic e, String operation) {
     print('Error en $operation: $e');
     errorMessage.value = 'Error de conexión: $e';

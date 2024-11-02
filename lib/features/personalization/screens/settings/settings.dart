@@ -9,7 +9,7 @@ import '../../../../utils/constants/sizes.dart';
 import '../../../../utils/constants/text_strings.dart';
 import '../../../../utils/local_storage/storage_utility.dart';
 import '../../../authentication/screens/edit_profile/edit_profile.dart';
-import '../../../authentication/controllers/auth_controller.dart'; // Importa el controlador
+import '../../../authentication/controllers/auth_controller.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -32,75 +32,90 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            // Header
-            const THomeAppBar(),
-            Padding(
-              padding: const EdgeInsets.all(TSizes.defaultSpace),
-              child: Column(
-                children: [
-                  const TSectionHeading(
-                    title: TTexts.accountSettingsTitle,
-                    showActionButton: false,
-                  ),
-                  const SizedBox(height: TSizes.spaceBtwItems),
-                  TSettingsMenuTile(
-                    icon: Iconsax.safe_home,
-                    title: TTexts.settingsMyProfileTitle,
-                    subTitle: TTexts.settingsMyProfileSubtitle,
-                    onTap: () => Get.to(() => const EditProfile()),
-                  ),
-                  const SizedBox(height: TSizes.spaceBtwSections),
-                  const TSectionHeading(
-                    title: TTexts.appSettingsTitle,
-                    showActionButton: false,
-                  ),
-                  const SizedBox(height: TSizes.spaceBtwItems),
-                  TSettingsMenuTile(
-                    icon: Iconsax.document_favorite,
-                    title: TTexts.settingsPreferencesTitle,
-                    subTitle: TTexts.settingsPreferencesSubtitle,
-                    trailing: Switch(
-                      value: isDarkMode,
-                      activeColor: TColors.primary,
-                      inactiveThumbColor: TColors.accent,
-                      onChanged: (value) {
-                        setState(() {
-                          isDarkMode = value;
-                        });
-                        _changeTheme(value);
-                      },
-                    ),
-                  ),
-                  const SizedBox(height: TSizes.spaceBtwSections),
-
-                  // Botón de cerrar sesión
-                  ElevatedButton.icon(
-                    icon: const Icon(Iconsax.logout, size: 28), // Icono más grande
-                    label: const Text(
-                      TTexts.logout,
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold), // Texto en negrita
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: TColors.error,
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30), // Esquinas redondeadas
-                      ),
-                      elevation: 5, // Sombra para el efecto de elevación
-                      shadowColor: Colors.black.withOpacity(0.3), // Color de la sombra
-                    ),
-                    onPressed: () {
-                      authController.logout();
+      body: Stack(
+        children: [
+          const Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: THomeAppBar(),
+          ),
+          Positioned(
+            top: 270,
+            left: 16,
+            right: 16,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const TSectionHeading(
+                  title: TTexts.accountSettingsTitle,
+                  showActionButton: false,
+                ),
+                const SizedBox(height: TSizes.spaceBtwItems),
+                TSettingsMenuTile(
+                  icon: Iconsax.safe_home,
+                  title: TTexts.settingsMyProfileTitle,
+                  subTitle: TTexts.settingsMyProfileSubtitle,
+                  onTap: () => Get.to(() => const EditProfile()),
+                ),
+              ],
+            ),
+          ),
+          Positioned(
+            top: 420,
+            left: 16,
+            right: 16,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const TSectionHeading(
+                  title: TTexts.appSettingsTitle,
+                  showActionButton: false,
+                ),
+                const SizedBox(height: TSizes.spaceBtwItems),
+                TSettingsMenuTile(
+                  icon: Iconsax.document_favorite,
+                  title: TTexts.settingsPreferencesTitle,
+                  subTitle: TTexts.settingsPreferencesSubtitle,
+                  trailing: Switch(
+                    value: isDarkMode,
+                    activeColor: TColors.primary,
+                    inactiveThumbColor: TColors.accent,
+                    onChanged: (value) {
+                      setState(() {
+                        isDarkMode = value;
+                      });
+                      _changeTheme(value);
                     },
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+          Positioned(
+            bottom: 30,
+            left: MediaQuery.of(context).size.width * 0.25,
+            child: ElevatedButton.icon(
+              icon: const Icon(Iconsax.logout, size: 28),
+              label: const Text(
+                TTexts.logout,
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: TColors.error,
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                elevation: 5,
+                shadowColor: Colors.black.withOpacity(0.3),
+              ),
+              onPressed: () {
+                authController.logout();
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

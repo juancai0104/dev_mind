@@ -27,7 +27,7 @@ class TLoginHeader extends StatelessWidget {
           right: -THelperFunctions.screenWidth() * 0.3,
           child: Container(
             width: THelperFunctions.screenWidth() * 1.4,
-            height: THelperFunctions.screenHeight() * 0.35,
+            height: THelperFunctions.screenHeight() * 0.38,
             padding: const EdgeInsets.all(0),
             decoration: const BoxDecoration(
               borderRadius: BorderRadius.only(bottomLeft: Radius.circular(400)),

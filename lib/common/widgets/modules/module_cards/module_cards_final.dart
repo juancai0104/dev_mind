@@ -23,7 +23,7 @@ class ModuleCard extends StatelessWidget {
       fontWeight: FontWeight.w500,
     );
 
-    // Define language-specific properties
+
     final Map<int, String> languageNames = {
       1: 'Python',
       2: 'JavaScript',

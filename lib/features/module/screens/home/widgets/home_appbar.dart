@@ -100,9 +100,9 @@ class _CurvedHeaderState extends State<CurvedHeader> with SingleTickerProviderSt
             top: 75,
             left: 0,
             right: 0,
-            child: SingleChildScrollView( // ScrollView para evitar desbordamiento
+            child: SingleChildScrollView(
               child: Column(
-                mainAxisSize: MainAxisSize.min, // Ajusta el tamaño de la columna
+                mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -111,7 +111,7 @@ class _CurvedHeaderState extends State<CurvedHeader> with SingleTickerProviderSt
                     child: FadeTransition(
                       opacity: _fadeAnimation,
                       child: Text(
-                        '¡Hola, $userName!', // Saludo con el nombre del usuario
+                        '¡Hola, $userName!',
                         style: const TextStyle(
                           fontSize: 27,
                           fontWeight: FontWeight.bold,
@@ -154,7 +154,7 @@ class _CurvePainter extends CustomPainter {
       ..style = PaintingStyle.fill;
 
     var path = Path();
-    path.moveTo(0, size.height * 0.4); // Ajusta la altura del inicio de la curva
+    path.moveTo(0, size.height * 0.4);
     path.quadraticBezierTo(size.width * 0.5, size.height * 1.0, size.width, size.height * 0.4);
     path.lineTo(size.width, 0);
     path.lineTo(0, 0);
