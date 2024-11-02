@@ -1,4 +1,3 @@
-import 'package:dev_mind/features/authentication/screens/signup/widgets/terms_conditions_checkbox.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:get/get.dart';
@@ -7,6 +6,7 @@ import '../../../../../utils/constants/sizes.dart';
 import '../../../../../utils/constants/text_strings.dart';
 import '../../../../../utils/constants/colors.dart';
 import '../../../controllers/auth_controller.dart';
+import '../../../controllers/user_validation_controller.dart';
 import '../../../models/users.dart';
 
 class TSignupForm extends StatefulWidget {
@@ -25,10 +25,25 @@ class _TSignupFormState extends State<TSignupForm> {
   final emailController = TextEditingController();
   final phoneNumberController = TextEditingController();
   final passwordController = TextEditingController();
+
   final authController = Get.find<AuthController>();
+  final validationController = Get.put(UserValidationController());
 
   bool _obscurePassword = true;
   bool _termsAccepted = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    emailController.addListener(() {
+      validationController.validateEmail(emailController.text);
+    });
+
+    usernameController.addListener(() {
+      validationController.validateUsername(usernameController.text);
+    });
+  }
 
   @override
   void dispose() {
@@ -41,7 +56,7 @@ class _TSignupFormState extends State<TSignupForm> {
     super.dispose();
   }
 
-  // Validadores
+  // Validadores actualizados
   String? _validateRequired(String? value, String fieldName) {
     if (value == null || value.trim().isEmpty) {
       return '$fieldName es requerido';
@@ -55,6 +70,19 @@ class _TSignupFormState extends State<TSignupForm> {
     }
     if (!GetUtils.isEmail(value)) {
       return 'Ingresa un email válido';
+    }
+    if (!validationController.isEmailAvailable.value) {
+      return 'Este email ya está registrado';
+    }
+    return null;
+  }
+
+  String? _validateUsername(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'El nombre de usuario es requerido';
+    }
+    if (!validationController.isUsernameAvailable.value) {
+      return 'Este nombre de usuario ya está en uso';
     }
     return null;
   }
@@ -79,11 +107,26 @@ class _TSignupFormState extends State<TSignupForm> {
     return null;
   }
 
-  void _handleSignup() {
+  Future<void> _handleSignup() async {
     if (!_termsAccepted) {
       Get.snackbar(
         'Error',
         'Debes aceptar los términos y condiciones',
+        backgroundColor: TColors.error.withOpacity(0.1),
+        colorText: TColors.error,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return;
+    }
+
+
+    final isEmailValid = await validationController.checkEmailAvailability(emailController.text);
+    final isUsernameValid = await validationController.checkUsernameAvailability(usernameController.text);
+
+    if (!isEmailValid || !isUsernameValid) {
+      Get.snackbar(
+        'Error',
+        'El email o nombre de usuario ya están en uso',
         backgroundColor: TColors.error.withOpacity(0.1),
         colorText: TColors.error,
         snackPosition: SnackPosition.BOTTOM,
@@ -137,30 +180,58 @@ class _TSignupFormState extends State<TSignupForm> {
           ),
           const SizedBox(height: TSizes.spaceBtwInputFields),
 
-          // Username
-          TextFormField(
+          // Username with validation indicator
+          Obx(() => TextFormField(
             controller: usernameController,
-            validator: (value) => _validateRequired(value, 'El nombre de usuario'),
-            decoration: const InputDecoration(
+            validator: _validateUsername,
+            decoration: InputDecoration(
               labelText: TTexts.username,
-              prefixIcon: Icon(Iconsax.user_edit),
+              prefixIcon: const Icon(Iconsax.user_edit),
+              suffixIcon: validationController.isValidating.value
+                  ? const SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              )
+                  : Icon(
+                validationController.isUsernameAvailable.value
+                    ? Icons.check_circle
+                    : Icons.error,
+                color: validationController.isUsernameAvailable.value
+                    ? Colors.green
+                    : Colors.red,
+              ),
             ),
-          ),
+          )),
           const SizedBox(height: TSizes.spaceBtwInputFields),
 
-          // Email
-          TextFormField(
+          // Email with validation indicator
+          Obx(() => TextFormField(
             controller: emailController,
             validator: _validateEmail,
             keyboardType: TextInputType.emailAddress,
-            decoration: const InputDecoration(
+            decoration: InputDecoration(
               labelText: TTexts.email,
-              prefixIcon: Icon(Iconsax.direct),
+              prefixIcon: const Icon(Iconsax.direct),
+              suffixIcon: validationController.isValidating.value
+                  ? const SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              )
+                  : Icon(
+                validationController.isEmailAvailable.value
+                    ? Icons.check_circle
+                    : Icons.error,
+                color: validationController.isEmailAvailable.value
+                    ? Colors.green
+                    : Colors.red,
+              ),
             ),
-          ),
+          )),
           const SizedBox(height: TSizes.spaceBtwInputFields),
 
-          // Phone Number
+          // Resto del formulario sin cambios...
           TextFormField(
             controller: phoneNumberController,
             validator: _validatePhone,
@@ -172,7 +243,6 @@ class _TSignupFormState extends State<TSignupForm> {
           ),
           const SizedBox(height: TSizes.spaceBtwInputFields),
 
-          // Password
           TextFormField(
             controller: passwordController,
             validator: _validatePassword,
@@ -188,7 +258,6 @@ class _TSignupFormState extends State<TSignupForm> {
           ),
           const SizedBox(height: TSizes.spaceBtwSections),
 
-          // Terms and conditions checkbox
           Row(
             children: [
               Checkbox(
@@ -205,7 +274,6 @@ class _TSignupFormState extends State<TSignupForm> {
           ),
           const SizedBox(height: TSizes.spaceBtwSections),
 
-          // Signup Button
           SizedBox(
             width: double.infinity,
             child: Obx(

@@ -98,7 +98,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             boxShadow: [
               BoxShadow(
                 color: dark ? Colors.grey.shade900 : Colors.grey.shade500,
-                blurRadius: 15,
+                blurRadius: 4,
                 offset: const Offset(0, 4),
               ),
             ],

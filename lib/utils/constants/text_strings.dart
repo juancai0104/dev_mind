@@ -59,6 +59,7 @@ class TTexts {
   static const String changeYourPasswordTitle = "Correo de restablecimiento de contraseña enviado";
   static const String changeYourPasswordSubtitle = "Te hemos enviando un enlace seguro para que puedas cambiar tu contraseña y mantengas tu cuenta protegida";
   static const String done = "Listo";
+  static const String cancel = "Cancelar";
 
   // Home
   static const String homeAppbarTitleWave = "Hola, "; // Placeholder para el nombre del usuario

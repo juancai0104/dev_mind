@@ -7,6 +7,7 @@ import '../../../../../utils/constants/text_strings.dart';
 import '../../../../../utils/constants/colors.dart';
 import '../../../../../utils/helpers/helper_functions.dart';
 import '../../../controllers/auth_controller.dart';
+import '../../../controllers/user_validation_controller.dart';
 import '../../../models/users.dart';
 
 class EditProfileForm extends StatefulWidget {
@@ -19,17 +20,17 @@ class EditProfileForm extends StatefulWidget {
 }
 
 class _EditProfileFormState extends State<EditProfileForm> {
-
   final _formKey = GlobalKey<FormState>();
-
   late final TextEditingController fullNameController;
   late final TextEditingController usernameController;
   late final TextEditingController emailController;
   late final TextEditingController phoneNumberController;
   final authController = Get.find<AuthController>();
+  final validationController = Get.put(UserValidationController());
 
   bool _isLoading = false;
   bool _isEditing = false;
+  bool _hasChanges = false;
 
   @override
   void initState() {
@@ -38,6 +39,33 @@ class _EditProfileFormState extends State<EditProfileForm> {
     usernameController = TextEditingController(text: widget.currentUser.username);
     emailController = TextEditingController(text: widget.currentUser.email);
     phoneNumberController = TextEditingController(text: widget.currentUser.phoneNumber);
+
+    fullNameController.addListener(_onFieldChanged);
+    usernameController.addListener(() {
+      _onFieldChanged();
+      if (usernameController.text != widget.currentUser.username) {
+        validationController.validateUsername(usernameController.text);
+      }
+    });
+    emailController.addListener(() {
+      _onFieldChanged();
+      if (emailController.text != widget.currentUser.email) {
+        validationController.validateEmail(emailController.text);
+      }
+    });
+    phoneNumberController.addListener(_onFieldChanged);
+  }
+
+  void _onFieldChanged() {
+    final hasChanges =
+        fullNameController.text != widget.currentUser.fullName ||
+            usernameController.text != widget.currentUser.username ||
+            emailController.text != widget.currentUser.email ||
+            phoneNumberController.text != widget.currentUser.phoneNumber;
+
+    if (hasChanges != _hasChanges) {
+      setState(() => _hasChanges = hasChanges);
+    }
   }
 
   @override
@@ -49,67 +77,200 @@ class _EditProfileFormState extends State<EditProfileForm> {
     super.dispose();
   }
 
-  Future<void> _handleEditProfile() async {
-    if (_formKey.currentState!.validate()) {
-      setState(() => _isLoading = true);
+  String? _validateEmail(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Email requerido';
+    }
+    if (!GetUtils.isEmail(value)) {
+      return 'Email inválido';
+    }
+    if (value != widget.currentUser.email && !validationController.isEmailAvailable.value) {
+      return 'Este email ya está en uso';
+    }
+    return null;
+  }
 
+  String? _validateUsername(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Usuario requerido';
+    }
+    if (value != widget.currentUser.username && !validationController.isUsernameAvailable.value) {
+      return 'Este nombre de usuario ya está en uso';
+    }
+    return null;
+  }
+
+  String? _validateRequired(String? value, String fieldName) {
+    if (value == null || value.isEmpty) {
+      return '$fieldName es requerido';
+    }
+    return null;
+  }
+
+  Future<void> _handleEditProfile() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    final newEmail = emailController.text.trim();
+    final newUsername = usernameController.text.trim();
+
+
+    if (newEmail != widget.currentUser.email) {
+      final isEmailAvailable = await validationController.checkEmailAvailability(newEmail);
+      if (!isEmailAvailable) {
+        Get.snackbar(
+          'Error',
+          'El email ya está en uso',
+          backgroundColor: TColors.error.withOpacity(0.1),
+          colorText: TColors.error,
+        );
+        return;
+      }
+    }
+
+    if (newUsername != widget.currentUser.username) {
+      final isUsernameAvailable = await validationController.checkUsernameAvailability(newUsername);
+      if (!isUsernameAvailable) {
+        Get.snackbar(
+          'Error',
+          'El nombre de usuario ya está en uso',
+          backgroundColor: TColors.error.withOpacity(0.1),
+          colorText: TColors.error,
+        );
+        return;
+      }
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
       final updatedUser = User(
         id: widget.currentUser.id,
         fullName: fullNameController.text.trim(),
-        username: usernameController.text.trim(),
-        email: emailController.text.trim(),
+        username: newUsername,
+        email: newEmail,
         phoneNumber: phoneNumberController.text.trim(),
       );
 
-      try {
-        await authController.updateUserProfile(updatedUser);
-        Get.snackbar('Éxito', 'Perfil actualizado correctamente',
-            snackPosition: SnackPosition.TOP, backgroundColor: TColors.success.withOpacity(0.1));
-        setState(() => _isEditing = false);
-      } catch (e) {
-        Get.snackbar('Error', 'No se pudo actualizar el perfil',
-            snackPosition: SnackPosition.TOP, backgroundColor: TColors.error.withOpacity(0.1));
-      } finally {
-        setState(() => _isLoading = false);
-      }
+      await authController.updateUserProfile(updatedUser);
+
+      Get.snackbar(
+        'Éxito',
+        'Perfil actualizado correctamente',
+        backgroundColor: TColors.success.withOpacity(0.1),
+        colorText: TColors.success,
+      );
+
+      setState(() {
+        _isEditing = false;
+        _hasChanges = false;
+      });
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'No se pudo actualizar el perfil',
+        backgroundColor: TColors.error.withOpacity(0.1),
+        colorText: TColors.error,
+      );
+    } finally {
+      setState(() => _isLoading = false);
     }
   }
 
   Widget _buildReadOnlyField(String label, String value, IconData icon) {
     final dark = THelperFunctions.isDarkMode(context);
-    return ListTile(
-      leading: Icon(icon, color: TColors.primary),
-      title: Text(
-        label,
-        style: TextStyle(fontWeight: FontWeight.bold, color: dark ? Colors.white : Colors.black87),
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      decoration: BoxDecoration(
+        border: Border(bottom: BorderSide(color: Colors.grey.withOpacity(0.2))),
       ),
-      subtitle: Text(
-        value,
-        style: const TextStyle(fontSize: 14),
+      child: ListTile(
+        leading: Icon(icon, color: TColors.primary),
+        title: Text(
+          label,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: dark ? Colors.white70 : Colors.black87,
+            fontSize: 14,
+          ),
+        ),
+        subtitle: Text(
+          value,
+          style: TextStyle(
+            fontSize: 16,
+            color: dark ? Colors.white : Colors.black,
+          ),
+        ),
+        visualDensity: VisualDensity.compact,
       ),
-      visualDensity: VisualDensity.compact,
     );
   }
 
-  Widget _buildEditableField(TextEditingController controller, String label, String? Function(String?) validator, IconData icon, {TextInputType? keyboardType}) {
-    return TextFormField(
-      controller: controller,
-      validator: validator,
-      keyboardType: keyboardType,
-      decoration: InputDecoration(
-        labelText: label,
-        prefixIcon: Icon(icon, color: TColors.primary),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: TColors.primary),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: TColors.textSecondary),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: TColors.primary, width: 2),
+  Widget _buildEditableField(
+      TextEditingController controller,
+      String label,
+      String? Function(String?) validator,
+      IconData icon, {
+        TextInputType? keyboardType,
+        bool showValidationIcon = false,
+        bool isEmailField = false, // Añadimos este parámetro para diferenciar campos
+      }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: TextFormField(
+        controller: controller,
+        validator: validator,
+        keyboardType: keyboardType,
+        style: const TextStyle(fontSize: 16),
+        decoration: InputDecoration(
+          labelText: label,
+          prefixIcon: Icon(icon, color: TColors.primary),
+          suffixIcon: showValidationIcon
+              ? Obx(() => validationController.isValidating.value
+              ? const SizedBox(
+            width: 20,//
+            height: 20,
+            child: Padding(
+              padding: EdgeInsets.all(8.0),
+              child: CircularProgressIndicator(strokeWidth: 2),
+            ),
+          )
+              : Icon(
+            isEmailField
+                ? (validationController.isEmailAvailable.value
+                ? Iconsax.tick_circle
+                : Iconsax.close_circle)
+                : (validationController.isUsernameAvailable.value
+                ? Iconsax.tick_circle
+                : Iconsax.close_circle),
+            color: isEmailField
+                ? (validationController.isEmailAvailable.value
+                ? Colors.green
+                : Colors.red)
+                : (validationController.isUsernameAvailable.value
+                ? Colors.green
+                : Colors.red),
+          ))
+              : null,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: TColors.primary),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: TColors.textSecondary),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: TColors.primary, width: 2),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: TColors.error),
+          ),
+          focusedErrorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(color: TColors.error, width: 2),
+          ),
         ),
       ),
     );
@@ -129,41 +290,49 @@ class _EditProfileFormState extends State<EditProfileForm> {
             borderRadius: BorderRadius.circular(50),
             boxShadow: [
               BoxShadow(
-                color: dark ? Colors.grey.shade900 : Colors.grey.shade500,
-                blurRadius: 16,
-                offset: Offset(0, 4),
+                color: dark ? Colors.grey.shade900 : Colors.grey.shade300,
+                blurRadius: 15,
+                offset: const Offset(0, 4),
               ),
             ],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 8),
-              Text(
-                'Actualiza tu información de perfil fácilmente.',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: TColors.primary,
-                ),
-                textAlign: TextAlign.center,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Mi Perfil',
+                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                        color: TColors.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(
+                      _isEditing ? Iconsax.close_circle : Iconsax.edit,
+                      color: TColors.primary,
+                    ),
+                    onPressed: () => setState(() => _isEditing = !_isEditing),
+                  ),
+                ],
               ),
-              const SizedBox(height: TSizes.spaceBtwInputFields),
+              const SizedBox(height: TSizes.spaceBtwSections),
 
-              // Botón Editar
-              Align(
-                alignment: Alignment.centerRight,
-                child: IconButton(
-                  icon: Icon(_isEditing ? Iconsax.close_circle : Iconsax.edit),
-                  color: TColors.primary,
-                  onPressed: () => setState(() => _isEditing = !_isEditing),
-                ),
-              ),
-              const SizedBox(height: TSizes.spaceBtwInputFields),
-
-              // Formulario
               AnimatedSwitcher(
-                duration: const Duration(milliseconds: 600),
+                duration: const Duration(milliseconds: 300),
+                transitionBuilder: (Widget child, Animation<double> animation) {
+                  return FadeTransition(
+                    opacity: animation,
+                    child: SizeTransition(
+                      sizeFactor: animation,
+                      child: child,
+                    ),
+                  );
+                },
                 child: _isEditing
                     ? Form(
                   key: _formKey,
@@ -172,43 +341,84 @@ class _EditProfileFormState extends State<EditProfileForm> {
                       _buildEditableField(
                         fullNameController,
                         TTexts.firstName,
-                            (value) => value == null || value.isEmpty ? 'Nombre requerido' : null,
+                            (value) => _validateRequired(value, 'El nombre completo'),
                         Iconsax.user,
                       ),
                       const SizedBox(height: TSizes.spaceBtwInputFields),
+
                       _buildEditableField(
                         usernameController,
                         TTexts.username,
-                            (value) => value == null || value.isEmpty ? 'Usuario requerido' : null,
+                        _validateUsername,
                         Iconsax.user_edit,
+                        showValidationIcon: true,
                       ),
                       const SizedBox(height: TSizes.spaceBtwInputFields),
+
                       _buildEditableField(
                         emailController,
                         TTexts.email,
-                            (value) => value == null || !GetUtils.isEmail(value) ? 'Email inválido' : null,
+                        _validateEmail,
                         Iconsax.direct,
                         keyboardType: TextInputType.emailAddress,
+                        showValidationIcon: true,
                       ),
                       const SizedBox(height: TSizes.spaceBtwInputFields),
+
                       _buildEditableField(
                         phoneNumberController,
                         TTexts.phoneNumber,
-                            (value) => value == null || !GetUtils.isPhoneNumber(value) ? 'Teléfono inválido' : null,
+                            (value) => _validateRequired(value, 'El teléfono'),
                         Iconsax.call,
                         keyboardType: TextInputType.phone,
                       ),
                       const SizedBox(height: TSizes.spaceBtwSections),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: _isLoading ? null : _handleEditProfile,
-                          child: _isLoading
-                              ? const CircularProgressIndicator(
-                              valueColor: AlwaysStoppedAnimation<Color>(TColors.buttonPrimary))
-                              : const Text(TTexts.submit),
-                        ),
+
+                      Row(
+                        children: [
+                          Expanded(
+                            child: OutlinedButton(
+                              onPressed: () {
+                                setState(() {
+                                  _isEditing = false;
+                                  fullNameController.text = widget.currentUser.fullName;
+                                  usernameController.text = widget.currentUser.username;
+                                  emailController.text = widget.currentUser.email;
+                                  phoneNumberController.text = widget.currentUser.phoneNumber;
+                                });
+                              },
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: Colors.red,
+                                side: const BorderSide(color: Colors.red), // Color del borde
+                                padding: const EdgeInsets.symmetric(vertical: 15.0), // Padding opcional
+                              ),
+                              child: const Text(TTexts.cancel),
+                            ),
+                          ),
+                          const SizedBox(width: TSizes.spaceBtwItems),
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: _hasChanges && !_isLoading ? _handleEditProfile : null,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: _hasChanges ? Colors.blue : Colors.red,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(vertical: 15.0),
+                              ),
+                              child: _isLoading
+                                  ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                ),
+                              )
+                                  : const Text(TTexts.submit),
+                            ),
+                          ),
+                        ],
                       ),
+
                     ],
                   ),
                 )
