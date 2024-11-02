@@ -50,7 +50,7 @@ class TTexts {
   static const String termsOfUse = "Términos de uso";
   static const String confirmEmail = "¡Verifica tu correo electrónico!";
   static const String tContinue = "Continuar";
-  static const String submit = "Enviar";
+  static const String submit = "Actualizar tu info";
   static const String verificationCode = "Código de verificación";
   static const String resendEmail = "Volver a enviar el correo";
   static const String resendEmailIn = "Volver a enviar el correo a";
@@ -79,5 +79,5 @@ class TTexts {
   static const String appSettingsTitle = "Configuración de la Aplicación";
   static const String settingsPreferencesTitle = "Cambio de tema";
   static const String settingsPreferencesSubtitle = "Elige el estilo visual que prefieras";
-  static const String logout = "Cerrar Sesión ✖️";
+  static const String logout = "Cerrar Sesión";
 }

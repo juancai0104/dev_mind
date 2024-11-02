@@ -84,7 +84,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold), // Texto en negrita
                     ),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: TColors.accent, // Color del fondo
+                      backgroundColor: TColors.error,
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30), // Esquinas redondeadas

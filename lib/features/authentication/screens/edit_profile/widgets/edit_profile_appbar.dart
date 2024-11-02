@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import '../../../../../common/widgets/appbar/appbar.dart';
 import '../../../../../utils/constants/colors.dart';
 import '../../../../../utils/constants/text_strings.dart';
+import '../../../controllers/auth_controller.dart';
 
-class TEditProfileAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const TEditProfileAppBar({super.key});
+class TEditProfileAppBar extends StatelessWidget  {
+  const TEditProfileAppBar({
+    super.key,
+
+  });
+
 
   @override
   Widget build(BuildContext context) {
@@ -12,14 +19,13 @@ class TEditProfileAppBar extends StatelessWidget implements PreferredSizeWidget 
       children: [
         const CurvedHeader(),
         TAppBar(
-          title: Container(), // Puedes agregar un título aquí si es necesario
+          title: Container(),
         ),
       ],
     );
   }
 
-  @override
-  Size get preferredSize => const Size.fromHeight(350.0); // Ajusta la altura según tu diseño
+
 }
 
 class CurvedHeader extends StatefulWidget {
@@ -34,6 +40,7 @@ class _CurvedHeaderState extends State<CurvedHeader> with SingleTickerProviderSt
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
   late Animation<double> _curveOpacityAnimation;
+  final authController = Get.find<AuthController>();
 
   @override
   void initState() {
@@ -76,6 +83,8 @@ class _CurvedHeaderState extends State<CurvedHeader> with SingleTickerProviderSt
 
   @override
   Widget build(BuildContext context) {
+
+    final userName = authController.currentUser.value?.username ?? "Usuario";
     return SizedBox(
       height: 350.0,
       child: Stack(
@@ -118,16 +127,32 @@ class _CurvedHeaderState extends State<CurvedHeader> with SingleTickerProviderSt
                       ),
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 3),
                   SlideTransition(
                     position: _slideAnimation,
                     child: FadeTransition(
                       opacity: _fadeAnimation,
-                      child: const Text(
-                        TTexts.EditAppbarSubTitle,
+                      child: Text(
+                        "${TTexts.EditAppbarSubTitle}",
                         style: TextStyle(
                           fontSize: 15,
                           color: Colors.white,
+                          fontFamily: 'Poppins',
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 5),
+                  SlideTransition(
+                    position: _slideAnimation,
+                    child: FadeTransition(
+                      opacity: _fadeAnimation,
+                      child: Text(
+                        "$userName",
+                        style: TextStyle(
+                          fontSize: 25,
+                          color: Colors.amberAccent,
                           fontFamily: 'Poppins',
                         ),
                         textAlign: TextAlign.center,

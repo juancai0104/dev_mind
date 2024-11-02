@@ -111,7 +111,7 @@ class _CurvedHeaderState extends State<CurvedHeader> with SingleTickerProviderSt
                     child: FadeTransition(
                       opacity: _fadeAnimation,
                       child: Text(
-                        'Hola $userName', // Saludo con el nombre del usuario
+                        '¡Hola, $userName!', // Saludo con el nombre del usuario
                         style: const TextStyle(
                           fontSize: 27,
                           fontWeight: FontWeight.bold,

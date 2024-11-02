@@ -18,6 +18,7 @@ class AuthController extends GetxController {
 
   // Configuración
   final String apiUrl = 'http://10.0.2.2:3000/api/auth';
+  final String apiUrlUpdate = 'http://10.0.2.2:3000/api/users';
   final Duration timeout = const Duration(seconds: 10);
 
   // Headers comunes para las peticiones
@@ -127,6 +128,61 @@ class AuthController extends GetxController {
       isLoading.value = false;
     }
   }
+
+  Future<void> updateUserProfile(User user) async {
+    isLoading.value = true;
+    errorMessage.value = '';
+
+    try {
+      final response = await http.put(
+        Uri.parse('$apiUrlUpdate/update/${user.id}'),
+        headers: _headers,
+        body: jsonEncode(user.toJson()),
+      ).timeout(timeout);
+
+      if (response.statusCode == 200) {
+        currentUser.value = user;
+      } else {
+        _handleError(response);
+      }
+    } on TimeoutException {
+      _handleTimeout();
+    } catch (e) {
+      _handleException(e, 'actualización de perfil');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> updateUserPassword(String currentPassword, String newPassword) async {
+    isLoading.value = true;
+    errorMessage.value = '';
+
+    try {
+      final response = await http.put(
+        Uri.parse('$apiUrlUpdate/update-password/${currentUser.value!.id}'),
+        headers: _headers,
+        body: jsonEncode({
+          'currentPassword': currentPassword,
+          'newPassword': newPassword,
+        }),
+      ).timeout(timeout);
+
+      if (response.statusCode == 200) {
+        Get.snackbar('Éxito', 'Contraseña actualizada correctamente',
+            snackPosition: SnackPosition.TOP);
+      } else {
+        _handleError(response);
+      }
+    } on TimeoutException {
+      _handleTimeout();
+    } catch (e) {
+      _handleException(e, 'cambio de contraseña');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
 
   Future<void> googleAuth() async {
     try {
