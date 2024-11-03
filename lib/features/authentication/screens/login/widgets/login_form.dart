@@ -22,7 +22,7 @@ class _TLoginFormState extends State<TLoginForm> {
   final passwordController = TextEditingController();
   final authController = Get.find<AuthController>();
 
-  bool _isPasswordVisible = false; // Variable para controlar la visibilidad
+  bool _isPasswordVisible = false; 
 
   @override
   Widget build(BuildContext context) {

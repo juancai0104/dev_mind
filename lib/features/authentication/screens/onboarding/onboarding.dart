@@ -18,40 +18,44 @@ class OnboardingScreen extends StatelessWidget {
     final controller = Get.put(OnBoardingController());
 
     return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Stack(
         children: [
-          // Horizontal Scrollable pages
+
           PageView(
             controller: controller.pageController,
             onPageChanged: controller.updatePageIndicator,
+            physics: const BouncingScrollPhysics(),
             children: const [
               OnBoardingPage(
                 image: TImages.devMindHorizontal,
                 title: TTexts.onBoardingH1Title,
-                subtitle: TTexts.onBoardingH1Subtitle
+                subtitle: TTexts.onBoardingH1Subtitle,
+
               ),
               OnBoardingPage(
                 image: TImages.relax,
                 title: TTexts.onBoardingH2Title,
-                subtitle: TTexts.onBoardingH2Subtitle
+                subtitle: TTexts.onBoardingH2Subtitle,
+
               ),
               OnBoardingPage(
                 image: TImages.holdingPhone,
                 title: TTexts.onBoardingH3Title,
-                subtitle: TTexts.onBoardingH3subtitle
+                subtitle: TTexts.onBoardingH3subtitle,
+
               )
             ],
           ),
 
-          // Skip button
+
           const OnBoardingSkip(),
 
-          // Dot navigation smoothPageIndicator
+
           const OnBoardingDotNavigation(),
 
-          // Circular Button
-          const OnBoardingNextButton()
 
+          const OnBoardingNextButton()
         ],
       ),
     );

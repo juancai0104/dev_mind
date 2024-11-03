@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import '../../../features/authentication/controllers/auth_controller.dart';
 import '../../../utils/constants/colors.dart';
 import '../../../utils/constants/image_strings.dart';
 import '../../../utils/constants/sizes.dart';
@@ -28,7 +31,9 @@ class TSocialButtons extends StatelessWidget {
             border: Border.all(color: Colors.grey.withOpacity(0.3)),
           ),
           child: IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Get.find<AuthController>().signInWithGoogle();
+            },
             icon: Image.asset(
               TImages.google,
               width: TSizes.iconMd,

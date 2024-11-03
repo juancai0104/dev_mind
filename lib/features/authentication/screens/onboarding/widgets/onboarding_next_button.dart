@@ -9,9 +9,7 @@ import '../../../controllers/onboarding/onboarding_controller.dart';
 
 
 class OnBoardingNextButton extends StatelessWidget {
-  const OnBoardingNextButton({
-    super.key,
-  });
+  const OnBoardingNextButton({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -20,10 +18,21 @@ class OnBoardingNextButton extends StatelessWidget {
     return Positioned(
       right: TSizes.defaultSpace,
       bottom: TDeviceUtils.getBottomNavigationBarHeight(),
-      child: ElevatedButton(
-        onPressed: () => OnBoardingController.instance.nextPage(),
-        style: ElevatedButton.styleFrom(shape: const CircleBorder(), backgroundColor: dark ? TColors.primary : Colors.black),
-        child: const Icon(Iconsax.arrow_right_3),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 300),
+        child: ElevatedButton(
+          onPressed: () => OnBoardingController.instance.nextPage(),
+          style: ElevatedButton.styleFrom(
+            shape: const CircleBorder(),
+            backgroundColor: dark ? TColors.primary : TColors.secondary,
+            padding: const EdgeInsets.all(16),
+            elevation: 2,
+          ),
+          child: const Icon(
+            Iconsax.arrow_right_3,
+            size: 24,
+          ),
+        ),
       ),
     );
   }

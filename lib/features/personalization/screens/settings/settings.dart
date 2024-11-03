@@ -10,6 +10,7 @@ import '../../../../utils/constants/text_strings.dart';
 import '../../../../utils/local_storage/storage_utility.dart';
 import '../../../authentication/screens/edit_profile/edit_profile.dart';
 import '../../../authentication/controllers/auth_controller.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -31,6 +32,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final user = firebase_auth.FirebaseAuth.instance.currentUser;
+    final photoUrl = user?.photoURL;
+
     return Scaffold(
       body: Stack(
         children: [
@@ -39,6 +43,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
             left: 0,
             right: 0,
             child: THomeAppBar(),
+          ),
+          Positioned(
+            top: 180,
+            left: MediaQuery.of(context).size.width * 0.44,
+            child: CircleAvatar(
+              radius: 25,
+              backgroundImage: photoUrl != null ? NetworkImage(photoUrl) : null,
+              child: photoUrl == null
+                  ? const Icon(Icons.person, size: 25, color: Colors.grey) // Ícono predeterminado si no hay foto
+                  : null,
+            ),
           ),
           Positioned(
             top: 270,
@@ -111,7 +126,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 shadowColor: Colors.black.withOpacity(0.3),
               ),
               onPressed: () {
-                authController.logout();
+                authController.signOutFromGoogle();
+                authController.checkAuthStatus();
               },
             ),
           ),

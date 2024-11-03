@@ -3,7 +3,7 @@ class User {
   final String? googleId;
   final String fullName;
   final String username;
-  final String phoneNumber;
+  final String? phoneNumber;
   final String email;
   final String? password;
 
@@ -12,10 +12,22 @@ class User {
     this.googleId,
     required this.fullName,
     required this.username,
-    required this.phoneNumber,
+    this.phoneNumber,
     required this.email,
     this.password,
   });
+
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User(
+      id: json['id'] is String ? int.parse(json['id']) : json['id'],
+      googleId: json['googleId'],
+      fullName: json['fullName'] ?? '',
+      username: json['username'] ?? '',
+      phoneNumber: json['phoneNumber'],
+      email: json['email'] ?? '',
+      password: json['password'],
+    );
+  }
 
   Map<String, dynamic> toJson() {
     return {
@@ -29,15 +41,23 @@ class User {
     };
   }
 
-  factory User.fromJson(Map<String, dynamic> json) {
+  User copyWith({
+    int? id,
+    String? googleId,
+    String? fullName,
+    String? username,
+    String? phoneNumber,
+    String? email,
+    String? password,
+  }) {
     return User(
-      id: json['id'],
-      googleId: json['googleId'],
-      fullName: json['fullName'],
-      username: json['username'],
-      phoneNumber: json['phoneNumber'],
-      email: json['email'],
-      password: json['password'],
+      id: id ?? this.id,
+      googleId: googleId ?? this.googleId,
+      fullName: fullName ?? this.fullName,
+      username: username ?? this.username,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+      email: email ?? this.email,
+      password: password ?? this.password,
     );
   }
 }

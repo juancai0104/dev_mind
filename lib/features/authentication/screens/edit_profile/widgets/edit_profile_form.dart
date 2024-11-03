@@ -384,7 +384,7 @@ class _EditProfileFormState extends State<EditProfileForm> {
                                   fullNameController.text = widget.currentUser.fullName;
                                   usernameController.text = widget.currentUser.username;
                                   emailController.text = widget.currentUser.email;
-                                  phoneNumberController.text = widget.currentUser.phoneNumber;
+                                  phoneNumberController.text = widget.currentUser.phoneNumber!;
                                 });
                               },
                               style: OutlinedButton.styleFrom(
@@ -427,7 +427,7 @@ class _EditProfileFormState extends State<EditProfileForm> {
                     _buildReadOnlyField(TTexts.firstName, widget.currentUser.fullName, Iconsax.user),
                     _buildReadOnlyField(TTexts.username, widget.currentUser.username, Iconsax.user_edit),
                     _buildReadOnlyField(TTexts.email, widget.currentUser.email, Iconsax.direct),
-                    _buildReadOnlyField(TTexts.phoneNumber, widget.currentUser.phoneNumber, Iconsax.call),
+                    _buildReadOnlyField(TTexts.phoneNumber, widget.currentUser.phoneNumber ?? 'null', Iconsax.call),
                   ],
                 ),
               ),

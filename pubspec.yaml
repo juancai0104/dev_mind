@@ -37,6 +37,8 @@ dependencies:
   cupertino_icons: ^1.0.6
   iconsax: ^0.0.8
   google_sign_in: ^6.2.1
+  firebase_auth: ^5.1.4
+  firebase_core: ^3.3.0
 
   # State management
   get: ^4.6.6
