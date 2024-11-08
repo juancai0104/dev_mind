@@ -2,6 +2,7 @@ import 'package:dev_mind/utils/constants/colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:iconsax/iconsax.dart';
 
 import '../../../../utils/constants/image_strings.dart';
 import '../../../../utils/constants/sizes.dart';
@@ -22,12 +23,34 @@ class _ResetPasswordState extends State<ResetPassword> {
   final confirmPasswordController = TextEditingController();
   final authController = Get.find<AuthController>();
 
+  bool _isNewPasswordVisible = false;
+  bool _isConfirmPasswordVisible = false;
+
   @override
   void dispose() {
     tokenController.dispose();
     newPasswordController.dispose();
     confirmPasswordController.dispose();
     super.dispose();
+  }
+
+  void _confirmResetPassword() {
+    final token = tokenController.text.trim();
+    final newPassword = newPasswordController.text.trim();
+    final confirmPassword = confirmPasswordController.text.trim();
+
+    final hasNoSpaces = RegExp(r'^\S+$');
+
+    if (!hasNoSpaces.hasMatch(newPassword) || !hasNoSpaces.hasMatch(confirmPassword)) {
+      Get.snackbar("Error", "Las contraseñas no deben contener espacios.");
+      return;
+    }
+
+    if (newPassword == confirmPassword) {
+      authController.confirmResetPassword(token, newPassword);
+    } else {
+      Get.snackbar("Error", "Las contraseñas no coinciden.");
+    }
   }
 
   @override
@@ -61,14 +84,38 @@ class _ResetPasswordState extends State<ResetPassword> {
               const SizedBox(height: 16),
               TextFormField(
                 controller: newPasswordController,
-                obscureText: true,
-                decoration: const InputDecoration(labelText: "Nueva contraseña"),
+                obscureText: !_isNewPasswordVisible,
+                decoration: InputDecoration(
+                  labelText: "Nueva contraseña",
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _isNewPasswordVisible ? Iconsax.eye : Iconsax.eye_slash
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _isNewPasswordVisible = !_isNewPasswordVisible;
+                      });
+                    },
+                  )
+                ),
               ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: confirmPasswordController,
-                obscureText: true,
-                decoration: const InputDecoration(labelText: "Confirmar contraseña"),
+                obscureText: !_isConfirmPasswordVisible,
+                decoration: InputDecoration(
+                  labelText: "Confirmar contraseña",
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _isConfirmPasswordVisible ? Iconsax.eye : Iconsax.eye_slash
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                      });
+                    },
+                  )
+                ),
               ),
               const SizedBox(height: 24),
 
@@ -76,18 +123,8 @@ class _ResetPasswordState extends State<ResetPassword> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                    onPressed: (){
-                      final token = tokenController.text.trim();
-                      final newPassword = newPasswordController.text.trim();
-                      final confirmPassword = confirmPasswordController.text.trim();
-
-                      if (newPassword == confirmPassword) {
-                        authController.confirmResetPassword(token, newPassword);
-                      } else {
-                        Get.snackbar("Error", "Las contraseñas no coinciden.");
-                      }
-                    },
-                    child: const Text(TTexts.done)
+                  onPressed: _confirmResetPassword,
+                  child: const Text(TTexts.done)
                 ),
               ),
               const SizedBox(height: TSizes.spaceBtwItems),
