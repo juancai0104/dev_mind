@@ -8,9 +8,24 @@ import '../../../../utils/constants/image_strings.dart';
 import '../../../../utils/constants/sizes.dart';
 import '../../../../utils/constants/text_strings.dart';
 import '../../../../utils/helpers/helper_functions.dart';
+import '../../controllers/auth_controller.dart';
 
-class ForgetPassword extends StatelessWidget {
+class ForgetPassword extends StatefulWidget {
   const ForgetPassword({super.key});
+
+  @override
+  _ForgetPasswordState createState() => _ForgetPasswordState();
+}
+
+class _ForgetPasswordState extends State<ForgetPassword> {
+  final emailController = TextEditingController();
+  final authController = Get.find<AuthController>();
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,6 +51,7 @@ class ForgetPassword extends StatelessWidget {
 
             // Text field
             TextFormField(
+              controller: emailController,
               decoration: const InputDecoration(
                   labelText: TTexts.email,
                   prefixIcon: Icon(Iconsax.direct_right)
@@ -47,8 +63,15 @@ class ForgetPassword extends StatelessWidget {
             SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                    onPressed: (){},
-                    child: const Text(TTexts.submit)
+                    onPressed: () {
+                      final email = emailController.text.trim();
+                      if(email.isNotEmpty) {
+                        authController.resetPassword(email);
+                      } else {
+                        Get.snackbar("Error", "Por favor ingresa tu correo electrónico.");
+                      }
+                    },
+                    child: const Text(TTexts.sendToken)
                 )
             )
           ],

@@ -7,9 +7,28 @@ import '../../../../utils/constants/image_strings.dart';
 import '../../../../utils/constants/sizes.dart';
 import '../../../../utils/constants/text_strings.dart';
 import '../../../../utils/helpers/helper_functions.dart';
+import '../../controllers/auth_controller.dart';
 
-class ResetPassword extends StatelessWidget {
+class ResetPassword extends StatefulWidget {
   const ResetPassword({super.key});
+
+  @override
+  _ResetPasswordState createState() => _ResetPasswordState();
+}
+
+class _ResetPasswordState extends State<ResetPassword> {
+  final tokenController = TextEditingController();
+  final newPasswordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
+  final authController = Get.find<AuthController>();
+
+  @override
+  void dispose() {
+    tokenController.dispose();
+    newPasswordController.dispose();
+    confirmPasswordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,11 +54,39 @@ class ResetPassword extends StatelessWidget {
               Text(TTexts.changeYourPasswordSubtitle, style: Theme.of(context).textTheme.labelMedium, textAlign: TextAlign.center),
               const SizedBox(height: TSizes.spaceBtwSections),
 
+              TextFormField(
+                controller: tokenController,
+                decoration: const InputDecoration(labelText: "Código de restablecimiento"),
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: newPasswordController,
+                obscureText: true,
+                decoration: const InputDecoration(labelText: "Nueva contraseña"),
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: confirmPasswordController,
+                obscureText: true,
+                decoration: const InputDecoration(labelText: "Confirmar contraseña"),
+              ),
+              const SizedBox(height: 24),
+
               // Buttons
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                    onPressed: (){},
+                    onPressed: (){
+                      final token = tokenController.text.trim();
+                      final newPassword = newPasswordController.text.trim();
+                      final confirmPassword = confirmPasswordController.text.trim();
+
+                      if (newPassword == confirmPassword) {
+                        authController.confirmResetPassword(token, newPassword);
+                      } else {
+                        Get.snackbar("Error", "Las contraseñas no coinciden.");
+                      }
+                    },
                     child: const Text(TTexts.done)
                 ),
               ),

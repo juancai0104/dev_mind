@@ -12,6 +12,8 @@ import '../models/users.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:google_sign_in/google_sign_in.dart';
 
+import '../screens/password_configuration/reset_password.dart';
+
 class AuthController extends GetxController {
   // Variables de estado
   var currentUser = Rxn<User>();
@@ -374,6 +376,48 @@ class AuthController extends GetxController {
     } catch (e) {
       print('Error verificando estado de autenticación: $e');
       return false;
+    }
+  }
+
+  Future<void> resetPassword(String email) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$apiUrl/reset-password'),
+        headers: _headers,
+        body: jsonEncode({'email': email}),
+      ).timeout(timeout);
+
+
+
+      if (response.statusCode == 200) {
+        Get.snackbar("Éxito", "Se ha enviado un correo para restablecer la contraseña.");
+        Get.to(() => const ResetPassword());
+      } else {
+        Get.snackbar("Error", "No se pudo procesar la solicitud.");
+      }
+    } on TimeoutException {
+      Get.snackbar("Error de conexión", "El servidor no responde. Intenta más tarde.");
+    } catch (e) {
+      Get.snackbar("Error", "Ocurrió un error al intentar restablecer la contraseña.");
+    }
+  }
+
+  Future<void> confirmResetPassword(String token, String newPassword) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$apiUrl/confirm-reset-password'),
+        headers: _headers,
+        body: jsonEncode({'token': token, 'newPassword': newPassword}),
+      );
+
+      if (response.statusCode == 200) {
+        Get.snackbar("Éxito", "Contraseña cambiada con éxito");
+        Get.offAll(() => const LoginScreen());
+      } else {
+        Get.snackbar("Error", "El código de restablecimiento no es válido o ha expirado.");
+      }
+    } catch (e) {
+      Get.snackbar("Error", "Ocurrió un problema al cambiar la contraseña.");
     }
   }
 }

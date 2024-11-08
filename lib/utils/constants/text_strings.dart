@@ -51,6 +51,7 @@ class TTexts {
   static const String confirmEmail = "¡Verifica tu correo electrónico!";
   static const String tContinue = "Continuar";
   static const String submit = "Actualizar tu info";
+  static const String sendToken = "Enviar";
   static const String verificationCode = "Código de verificación";
   static const String resendEmail = "Volver a enviar el correo";
   static const String resendEmailIn = "Volver a enviar el correo a";
