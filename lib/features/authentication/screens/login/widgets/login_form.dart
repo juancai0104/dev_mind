@@ -1,11 +1,11 @@
-import 'package:dev_mind/utils/constants/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 
-import '../../../../../navigation_menu.dart';
+import '../../../../../utils/constants/colors.dart';
 import '../../../../../utils/constants/sizes.dart';
 import '../../../../../utils/constants/text_strings.dart';
+import '../../../../../utils/helpers/helper_functions.dart';
 import '../../../controllers/auth_controller.dart';
 import '../../password_configuration/forget_password.dart';
 import '../../signup/signup.dart';
@@ -21,35 +21,90 @@ class _TLoginFormState extends State<TLoginForm> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final authController = Get.find<AuthController>();
+  bool _isPasswordVisible = false;
 
-  bool _isPasswordVisible = false; 
 
   @override
   Widget build(BuildContext context) {
+    final isDark = THelperFunctions.isDarkMode(context);
     return Form(
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: TSizes.spaceBtwSections),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Email
+            // Email Field
+            Text(
+              TTexts.email,
+              style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                fontWeight: FontWeight.w600,
+                color:  isDark ? TColors.accent : TColors.primary,
+              ),
+            ),
+            const SizedBox(height: 8),
             TextFormField(
               controller: emailController,
-              decoration: const InputDecoration(
-                prefixIcon: Icon(Iconsax.user),
-                labelText: TTexts.email,
+              keyboardType: TextInputType.emailAddress,
+              decoration: InputDecoration(
+                prefixIcon: Container(
+                  padding: const EdgeInsets.all(12),
+                  child: Icon(Iconsax.user, color: TColors.secondary),
+                ),
+                hintText: 'nombre@ejemplo.com',
+                filled: true,
+                fillColor: isDark ? Colors.grey[850] : Colors.grey[100],
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.grey[300]!, width: 1),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: TColors.secondary, width: 1.5),
+                ),
               ),
             ),
             const SizedBox(height: TSizes.spaceBtwInputFields),
 
-            // Password
+            // Password Field
+            Text(
+              TTexts.password,
+              style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: isDark ? TColors.accent : TColors.primary,
+              ),
+            ),
+            const SizedBox(height: 8),
             TextFormField(
               controller: passwordController,
               obscureText: !_isPasswordVisible,
               decoration: InputDecoration(
-                labelText: TTexts.password,
+                prefixIcon: Container(
+                  padding: const EdgeInsets.all(12),
+                  child: Icon(Iconsax.lock, color: TColors.secondary),
+                ),
+                hintText: '••••••••',
+                filled: true,
+                fillColor: isDark ? Colors.grey[850] : Colors.grey[100],
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.grey[300]!, width: 1),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: TColors.secondary, width: 1.5),
+                ),
                 suffixIcon: IconButton(
                   icon: Icon(
                     _isPasswordVisible ? Iconsax.eye : Iconsax.eye_slash,
+                    color: TColors.secondary,
                   ),
                   onPressed: () {
                     setState(() {
@@ -59,27 +114,31 @@ class _TLoginFormState extends State<TLoginForm> {
                 ),
               ),
             ),
-            const SizedBox(height: TSizes.spaceBtwInputFields / 2),
 
-            // Remember me and forget password
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // Forget password
-                TextButton(
-                  onPressed: () => Get.to(() => const ForgetPassword()),
-                  child: const Text(
-                    TTexts.forgetPassword,
-                    style: TextStyle(color: TColors.accent),
+            // Forget Password
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton(
+                onPressed: () => Get.to(() => const ForgetPassword()),
+                style: TextButton.styleFrom(
+                  foregroundColor: TColors.accent,
+                  padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
+                ),
+                child: Text(
+                  TTexts.forgetPassword,
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    color: TColors.accent,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
-              ],
+              ),
             ),
             const SizedBox(height: TSizes.spaceBtwSections),
 
-            // Sign In button
+            // Sign In Button
             SizedBox(
               width: double.infinity,
+              height: 55,
               child: ElevatedButton(
                 onPressed: () {
                   final email = emailController.text.trim();
@@ -87,20 +146,48 @@ class _TLoginFormState extends State<TLoginForm> {
                   if (email.isNotEmpty && password.isNotEmpty) {
                     authController.login(email, password);
                   } else {
-                    Get.snackbar("Error", "Por favor, rellena todos los campos.");
+                    Get.snackbar("Error", "Por favor, rellena todos los campos.", backgroundColor: isDark? TColors.primary : TColors.accent, colorText: isDark? TColors.black : TColors.white);
                   }
                 },
-                child: const Text(TTexts.signIn),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: isDark? TColors.primary : TColors.secondary,
+                  foregroundColor: Colors.white,
+                  side: BorderSide(color: isDark? TColors.secondary : TColors.accent, width: 1.5),
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+                child: Text(
+                  TTexts.signIn,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: TColors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ),
             ),
             const SizedBox(height: TSizes.spaceBtwItems),
 
-            // Create account button
+            // Create Account Button
             SizedBox(
               width: double.infinity,
+              height: 55,
               child: OutlinedButton(
                 onPressed: () => Get.to(() => const SignupScreen()),
-                child: const Text(TTexts.createAccount),
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(color: isDark? TColors.primary : TColors.accent, width: 1.5),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+                child: Text(
+                  TTexts.createAccount,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: isDark? TColors.secondary : TColors.primary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ),
             ),
           ],

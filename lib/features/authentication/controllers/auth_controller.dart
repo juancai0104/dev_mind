@@ -358,7 +358,7 @@ class AuthController extends GetxController {
     errorMessage.value = 'Error de conexión: $e';
     Get.snackbar(
       'Error',
-      'Ocurrió un error durante la $operation',
+      'Ocurrió un error durante el $operation',
       snackPosition: SnackPosition.TOP,
     );
   }
