@@ -1,18 +1,23 @@
-import 'package:dev_mind/common/widgets/custom_shapes/containers/rounded_container.dart';
-import 'package:dev_mind/common/widgets/custom_shapes/containers/rounded_images.dart';
-import 'package:dev_mind/utils/constants/image_strings.dart';
-import 'package:dev_mind/utils/helpers/helper_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
+import '../../../../features/module/controllers/module/progress_controller.dart';
 import '../../../../features/module/screens/modules/module_theory.dart';
 import '../../../../utils/constants/colors.dart';
 import '../../../../utils/constants/sizes.dart';
+import '../../../../utils/constants/image_strings.dart';
+import '../../../../utils/helpers/helper_functions.dart';
+import '../../custom_shapes/containers/rounded_container.dart';
+import '../../custom_shapes/containers/rounded_images.dart';
 
 class ModuleCard extends StatelessWidget {
   final int languageId;
+  final int userId;
 
-  const ModuleCard({super.key, required this.languageId});
+  const ModuleCard({
+    super.key,
+    required this.languageId,
+    required this.userId,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -23,6 +28,11 @@ class ModuleCard extends StatelessWidget {
       fontWeight: FontWeight.w500,
     );
 
+    // Crea un controlador único para esta tarjeta, basado en languageId y userId.
+    final ProgressController progressController = Get.put(
+      ProgressController(userId: userId, moduleId: languageId),
+      tag: 'progress_${userId}_$languageId', // Usando un tag único para cada controlador
+    );
 
     final Map<int, String> languageNames = {
       1: 'Python',
@@ -44,10 +54,7 @@ class ModuleCard extends StatelessWidget {
       2: TColors.buttonPrimary,
     };
 
-    final Map<int, String> durations = {
-      1: '60 minutos',
-      2: '~ 45 minutos',
-    };
+    final moduleColor = colors[languageId] ?? TColors.buttonPrimary;
 
     return GestureDetector(
       onTap: () {
@@ -95,8 +102,7 @@ class ModuleCard extends StatelessWidget {
                       child: Container(
                         padding: const EdgeInsets.all(TSizes.sm),
                         decoration: BoxDecoration(
-                          color: (colors[languageId] ?? TColors.buttonPrimary)
-                              .withOpacity(0.8),
+                          color: moduleColor.withOpacity(0.8),
                           borderRadius: const BorderRadius.only(
                             bottomLeft: Radius.circular(TSizes.moduleImageRadius),
                             bottomRight: Radius.circular(TSizes.moduleImageRadius),
@@ -128,18 +134,52 @@ class ModuleCard extends StatelessWidget {
             const SizedBox(height: 10),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: TSizes.sm),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              child: Column(
                 children: [
-                  Text(
-                    durations[languageId] ?? 'Duration',
-                    style: textStyle,
-                  ),
-                  Icon(
-                    Icons.code,
-                    color: colors[languageId] ?? TColors.buttonPrimary,
-                    size: 20,
-                  ),
+                  // Progress Bar
+                  Obx(() {
+                    if (progressController.isLoading.value) {
+                      return const SizedBox(
+                        height: 4,
+                        child: LinearProgressIndicator(),
+                      );
+                    }
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: LinearProgressIndicator(
+                            value: progressController.progress.value.progressPercentage / 100,
+                            backgroundColor: moduleColor.withOpacity(0.2),
+                            valueColor: AlwaysStoppedAnimation<Color>(moduleColor),
+                            minHeight: 8,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              '${progressController.progress.value.progressPercentage.toStringAsFixed(1)}%',
+                              style: textStyle.copyWith(
+                                color: moduleColor,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Icon(
+                              progressController.progress.value.progressPercentage == 100
+                                  ? Icons.code_sharp
+                                  : Icons.code_off_sharp,
+                              color: moduleColor,
+                              size: 20,
+                            ),
+                          ],
+                        ),
+                      ],
+                    );
+                  }),
                 ],
               ),
             ),

@@ -12,10 +12,13 @@ class TImages {
 
   static const String holdingPhone = "assets/logos/dev_mind/holdingphone.png";
 
+  static const String dev_mind_reminder = "assets/logos/logos/dev-mind_reminder.png";
   // Social Logos
   static const String google = "assets/logos/google.png";
 
   static const String js = "assets/logos/languages/java.png";
 
   static const String python = "assets/logos/languages/python.png";
+
+
 }

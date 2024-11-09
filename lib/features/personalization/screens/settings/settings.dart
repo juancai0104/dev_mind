@@ -19,15 +19,44 @@ class SettingsScreen extends StatefulWidget {
   _SettingsScreenState createState() => _SettingsScreenState();
 }
 
-class _SettingsScreenState extends State<SettingsScreen> {
+class _SettingsScreenState extends State<SettingsScreen>
+    with SingleTickerProviderStateMixin {
   final TLocalStorage _localStorage = TLocalStorage();
   bool isDarkMode = false;
   final authController = Get.find<AuthController>();
+  late AnimationController _animationController;
+  late Animation<double> _fadeAnimation;
+  late Animation<double> _scaleAnimation;
 
   @override
   void initState() {
     super.initState();
     isDarkMode = _localStorage.readData<bool>('isDarkMode') ?? Get.isPlatformDarkMode;
+
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 2000),
+      vsync: this,
+    );
+
+    _fadeAnimation = CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeIn,
+    );
+
+    _scaleAnimation = Tween<double>(begin: 0.2, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeOut,
+      ),
+    );
+
+    _animationController.forward();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
   }
 
   @override
@@ -47,12 +76,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Positioned(
             top: 180,
             left: MediaQuery.of(context).size.width * 0.44,
-            child: CircleAvatar(
-              radius: 25,
-              backgroundImage: photoUrl != null ? NetworkImage(photoUrl) : null,
-              child: photoUrl == null
-                  ? const Icon(Icons.person, size: 25, color: Colors.grey) // Ícono predeterminado si no hay foto
-                  : null,
+            child: FadeTransition(
+              opacity: _fadeAnimation,
+              child: ScaleTransition(
+                scale: _scaleAnimation,
+                child: CircleAvatar(
+                  radius: 25,
+                  backgroundImage: photoUrl != null ? NetworkImage(photoUrl) : null,
+                  child: photoUrl == null
+                      ? const Icon(Icons.person, size: 25, color: Colors.grey)
+                      : null,
+                ),
+              ),
             ),
           ),
           Positioned(

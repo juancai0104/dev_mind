@@ -68,7 +68,7 @@ class _ResetPasswordState extends State<ResetPassword> {
           child: Column(
             children: [
               // Image
-              Image(image: const AssetImage(TImages.google), width: THelperFunctions.screenWidth() * 0.6),
+              Image(image: const AssetImage(TImages.devMindHorizontal) , width: THelperFunctions.screenWidth() * 0.99),
               const SizedBox(height: TSizes.spaceBtwItems),
 
               // Title and subtitle

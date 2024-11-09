@@ -44,7 +44,7 @@ class _TLoginFormState extends State<TLoginForm> {
             // Password
             TextFormField(
               controller: passwordController,
-              obscureText: !_isPasswordVisible, // Ocultar o mostrar contraseña
+              obscureText: !_isPasswordVisible,
               decoration: InputDecoration(
                 labelText: TTexts.password,
                 suffixIcon: IconButton(
@@ -53,7 +53,7 @@ class _TLoginFormState extends State<TLoginForm> {
                   ),
                   onPressed: () {
                     setState(() {
-                      _isPasswordVisible = !_isPasswordVisible; // Cambiar estado
+                      _isPasswordVisible = !_isPasswordVisible;
                     });
                   },
                 ),

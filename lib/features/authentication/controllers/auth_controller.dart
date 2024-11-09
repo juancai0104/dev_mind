@@ -91,7 +91,7 @@ class AuthController extends GetxController {
         currentUser.value = User.fromJson(data);
         isAuthenticated.value = true;
         Get.offAll(() => const NavigationMenu());
-        Get.snackbar('Éxito', 'Inicio de sesión exitoso', snackPosition: SnackPosition.TOP);
+        Get.snackbar('Éxito', 'Inicio de sesión exitoso', snackPosition: SnackPosition.TOP, backgroundColor: TColors.info.withOpacity(0.8));
       } else {
         _handleError(response);
       }
@@ -120,7 +120,7 @@ class AuthController extends GetxController {
 
 
         Get.offAll(() => LoginScreen());
-        Get.snackbar('Éxito', 'Sesión cerrada correctamente', snackPosition: SnackPosition.TOP);
+        Get.snackbar('Éxito', 'Sesión cerrada correctamente', snackPosition: SnackPosition.TOP, backgroundColor: TColors.info.withOpacity(0.8));
       } else {
         _handleError(response);
       }
@@ -148,7 +148,7 @@ class AuthController extends GetxController {
 
       if (response.statusCode == 200) {
         currentUser.value = user;
-        Get.snackbar('Éxito', 'Perfil actualizado correctamente', snackPosition: SnackPosition.TOP);
+        Get.snackbar('Éxito', 'Perfil actualizado correctamente', snackPosition: SnackPosition.TOP, backgroundColor: TColors.primary.withOpacity(0.8));
       } else {
         _handleError(response);
       }
@@ -281,7 +281,7 @@ class AuthController extends GetxController {
             'Error',
             'Este correo ya está registrado con una cuenta normal. Por favor, inicie sesión con su contraseña o use otro correo.',
             snackPosition: SnackPosition.TOP,
-            backgroundColor: TColors.error.withOpacity(0.8),
+            backgroundColor: TColors.accent.withOpacity(0.8),
             colorText: Colors.white,
             duration: const Duration(seconds: 4),
             margin: const EdgeInsets.all(10),
@@ -305,7 +305,7 @@ class AuthController extends GetxController {
         'Error',
         'No se pudo completar el inicio de sesión con Google: ${e.toString()}',
         snackPosition: SnackPosition.TOP,
-        backgroundColor: TColors.error.withOpacity(0.8),
+        backgroundColor: TColors.accent.withOpacity(0.8),
         colorText: Colors.white,
         duration: const Duration(seconds: 3),
         margin: const EdgeInsets.all(10),
@@ -328,7 +328,7 @@ class AuthController extends GetxController {
     }
   }
 
-  // Métodos privados para manejar errores
+
   void _handleError(http.Response response) {
     try {
       final errorData = jsonDecode(response.body);
@@ -340,7 +340,7 @@ class AuthController extends GetxController {
       'Error',
       errorMessage.value,
       snackPosition: SnackPosition.TOP,
-      backgroundColor: TColors.error,
+      backgroundColor: TColors.accent.withOpacity(0.8),
     );
   }
 

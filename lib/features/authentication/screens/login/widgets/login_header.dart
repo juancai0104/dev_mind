@@ -20,8 +20,6 @@ class TLoginHeader extends StatelessWidget {
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        //const Positioned(top: -550, right: -300, child: TCircularContainer(width: 800, height: 800, backgroundColor: TColors.secondary)),
-        //const Positioned(top: -150, right: -150, child: TCircularContainer(backgroundColor: TColors.secondary)),
         Positioned(
           top: -THelperFunctions.screenHeight() * 0.08,
           right: -THelperFunctions.screenWidth() * 0.3,
