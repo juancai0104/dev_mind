@@ -222,8 +222,8 @@ class _SettingsScreenState extends State<SettingsScreen>
       if (areNotificationsEnabled) {
         await NotificationService.scheduleNotification(
           1,
-          'Recordatorio diario',
-          '¡Es hora de revisar tu progreso!',
+          '⚡ ¡El código está llamando!',
+          '¡Un reto más para convertirte en un crack del código! 💻🌟',
           DateTime(
             DateTime.now().year,
             DateTime.now().month,
@@ -245,8 +245,8 @@ class _SettingsScreenState extends State<SettingsScreen>
     if (isEnabled) {
       await NotificationService.scheduleNotification(
         1,
-        'Recordatorio diario',
-        '¡Es hora de revisar tu progreso!',
+        '⚡ ¡El código está llamando!',
+        ' ¡Un reto más para convertirte en un crack del código! 💻🌟 ¡Empieza ya y supera tus límites!',
         DateTime(
           DateTime.now().year,
           DateTime.now().month,
