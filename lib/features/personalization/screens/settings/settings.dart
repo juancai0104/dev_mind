@@ -8,6 +8,7 @@ import 'package:iconsax/iconsax.dart';
 import '../../../../utils/constants/sizes.dart';
 import '../../../../utils/constants/text_strings.dart';
 import '../../../../utils/local_storage/storage_utility.dart';
+import '../../../../utils/notification_service.dart';
 import '../../../authentication/screens/edit_profile/edit_profile.dart';
 import '../../../authentication/controllers/auth_controller.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
@@ -27,11 +28,19 @@ class _SettingsScreenState extends State<SettingsScreen>
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<double> _scaleAnimation;
+  bool areNotificationsEnabled = true;
+  TimeOfDay selectedTime = const TimeOfDay(hour: 8, minute: 0);
 
   @override
   void initState() {
     super.initState();
     isDarkMode = _localStorage.readData<bool>('isDarkMode') ?? Get.isPlatformDarkMode;
+    areNotificationsEnabled = _localStorage.readData<bool>('areNotificationsEnabled') ?? true;
+    final savedTime = _localStorage.readData<String>('selectedTime');
+    if (savedTime != null) {
+      final parts = savedTime.split(':');
+      selectedTime = TimeOfDay(hour: int.parse(parts[0]), minute: int.parse(parts[1]));
+    }
 
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 2000),
@@ -139,6 +148,29 @@ class _SettingsScreenState extends State<SettingsScreen>
                     },
                   ),
                 ),
+                const SizedBox(height: TSizes.spaceBtwItems),
+                TSettingsMenuTile(
+                  icon: Iconsax.notification,
+                  title: 'Notificaciones diarias',
+                  subTitle: areNotificationsEnabled
+                      ? 'Activadas a las ${selectedTime.format(context)}'
+                      : 'Desactivadas',
+                  trailing: Switch(
+                    value: areNotificationsEnabled,
+                    activeColor: TColors.primary,
+                    inactiveThumbColor: TColors.accent,
+                    onChanged: _toggleNotifications,
+                  ),
+                ),
+                if (areNotificationsEnabled)
+                  ListTile(
+                    title: const Text('Hora de la notificación'),
+                    subtitle: Text(
+                      '${selectedTime.hour.toString().padLeft(2, '0')}:${selectedTime.minute.toString().padLeft(2, '0')}',
+                    ),
+                    trailing: const Icon(Icons.edit),
+                    onTap: () => _selectTime(context),
+                  ),
               ],
             ),
           ),
@@ -174,5 +206,63 @@ class _SettingsScreenState extends State<SettingsScreen>
   void _changeTheme(bool isDark) {
     _localStorage.saveData('isDarkMode', isDark);
     Get.changeThemeMode(isDark ? ThemeMode.dark : ThemeMode.light);
+  }
+
+  Future<void> _selectTime(BuildContext context) async {
+    final pickedTime = await showTimePicker(
+      context: context,
+      initialTime: selectedTime,
+    );
+
+    if (pickedTime != null) {
+      setState(() {
+        selectedTime = pickedTime;
+      });
+
+      if (areNotificationsEnabled) {
+        await NotificationService.scheduleNotification(
+          1,
+          'Recordatorio diario',
+          '¡Es hora de revisar tu progreso!',
+          DateTime(
+            DateTime.now().year,
+            DateTime.now().month,
+            DateTime.now().day,
+            selectedTime.hour,
+            selectedTime.minute,
+          ),
+        );
+      }
+    }
+    await _savePreferences();
+  }
+
+  Future<void> _toggleNotifications(bool isEnabled) async {
+    setState(() {
+      areNotificationsEnabled = isEnabled;
+    });
+
+    if (isEnabled) {
+      await NotificationService.scheduleNotification(
+        1,
+        'Recordatorio diario',
+        '¡Es hora de revisar tu progreso!',
+        DateTime(
+          DateTime.now().year,
+          DateTime.now().month,
+          DateTime.now().day,
+          selectedTime.hour,
+          selectedTime.minute,
+        ),
+      );
+    } else {
+      await NotificationService.cancelNotifications();
+    }
+    await _savePreferences();
+  }
+
+  Future<void> _savePreferences() async {
+    _localStorage.saveData('areNotificationsEnabled', areNotificationsEnabled);
+    _localStorage.saveData('selectedTime', '${selectedTime.hour}:${selectedTime.minute}');
   }
 }
