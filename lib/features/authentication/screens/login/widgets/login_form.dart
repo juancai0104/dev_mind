@@ -22,8 +22,6 @@ class _TLoginFormState extends State<TLoginForm> {
   final passwordController = TextEditingController();
   final authController = Get.find<AuthController>();
   bool _isPasswordVisible = false;
-
-
   @override
   Widget build(BuildContext context) {
     final isDark = THelperFunctions.isDarkMode(context);
@@ -68,7 +66,6 @@ class _TLoginFormState extends State<TLoginForm> {
               ),
             ),
             const SizedBox(height: TSizes.spaceBtwInputFields),
-
             // Password Field
             Text(
               TTexts.password,
@@ -119,7 +116,7 @@ class _TLoginFormState extends State<TLoginForm> {
             Align(
               alignment: Alignment.centerRight,
               child: TextButton(
-                onPressed: () => Get.to(() => const ForgetPassword()),
+                onPressed: () => Get.to(() => ForgetPassword()),
                 style: TextButton.styleFrom(
                   foregroundColor: TColors.accent,
                   padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 8),
@@ -134,8 +131,6 @@ class _TLoginFormState extends State<TLoginForm> {
               ),
             ),
             const SizedBox(height: TSizes.spaceBtwSections),
-
-            // Sign In Button
             SizedBox(
               width: double.infinity,
               height: 55,
@@ -168,8 +163,6 @@ class _TLoginFormState extends State<TLoginForm> {
               ),
             ),
             const SizedBox(height: TSizes.spaceBtwItems),
-
-            // Create Account Button
             SizedBox(
               width: double.infinity,
               height: 55,

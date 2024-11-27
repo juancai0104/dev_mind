@@ -10,14 +10,15 @@ import '../../../controllers/onboarding/onboarding_controller.dart';
 
 class OnBoardingNextButton extends StatelessWidget {
   const OnBoardingNextButton({super.key});
-
   @override
   Widget build(BuildContext context) {
     final dark = THelperFunctions.isDarkMode(context);
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
 
     return Positioned(
-      right: TSizes.defaultSpace,
-      bottom: TDeviceUtils.getBottomNavigationBarHeight(),
+      right: screenWidth * 0.05,
+      bottom: TDeviceUtils.getBottomNavigationBarHeight() + screenHeight * 0.02,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
         child: ElevatedButton(
@@ -25,12 +26,13 @@ class OnBoardingNextButton extends StatelessWidget {
           style: ElevatedButton.styleFrom(
             shape: const CircleBorder(),
             backgroundColor: dark ? TColors.primary : TColors.secondary,
-            padding: const EdgeInsets.all(16),
+            side: BorderSide(color: dark ? TColors.primary : TColors.accent, width: 1.5),
+            padding: EdgeInsets.all(screenWidth * 0.012),
             elevation: 2,
           ),
-          child: const Icon(
-            Iconsax.arrow_right_3,
-            size: 24,
+          child: Icon(
+            Iconsax.arrow_right_14,
+            size: screenWidth * 0.06,
           ),
         ),
       ),

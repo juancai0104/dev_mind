@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "767968895947-88l3ksvqnng1hnhj37ibik62vacnil8c.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.devmind.app",
+            "certificate_hash": "700285d445b78a15c2f99d3eadd0d3257211e796"
+          }
+        },
+        {
           "client_id": "767968895947-da0kvj2d52e8f2fsgls7i1q64t0h89qq.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

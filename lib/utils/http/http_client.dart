@@ -1,8 +1,9 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class THttpHelper {
-  static const String _baseUrl = 'http://10.0.2.2:3000/api';
+  static final String? _baseUrl = dotenv.env['API_URL'];
 
   static Future<dynamic> get(String endpoint) async {
     final response = await http.get(Uri.parse('$_baseUrl/$endpoint'));

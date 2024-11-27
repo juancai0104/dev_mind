@@ -55,6 +55,7 @@ class TTexts {
   static const String verificationCode = "Código de verificación";
   static const String resendEmail = "Volver a enviar el correo";
   static const String resendEmailIn = "Volver a enviar el correo a";
+  static const String acceptTerms = "Acepto los términos y condiciones al registar mi cuenta y mis datos personales en las bases de datos de DEV|MIND";
 
   // Reset Password
   static const String changeYourPasswordTitle = "Correo de restablecimiento de contraseña enviado";

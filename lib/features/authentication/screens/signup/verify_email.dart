@@ -23,7 +23,6 @@ class VerifyEmailScreen extends StatelessWidget {
         ],
       ),
       body: SingleChildScrollView(
-        // Padding to give default equal space on all sides in all screens
         child: Padding(
           padding: const EdgeInsets.all(TSizes.defaultSpace),
           child: Column(
@@ -39,8 +38,6 @@ class VerifyEmailScreen extends StatelessWidget {
               const SizedBox(height: TSizes.spaceBtwItems),
               Text(TTexts.confirmEmailSubtitle, style: Theme.of(context).textTheme.labelMedium, textAlign: TextAlign.center),
               const SizedBox(height: TSizes.spaceBtwSections),
-
-              // Buttons
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -63,7 +60,6 @@ class VerifyEmailScreen extends StatelessWidget {
                     child: const Text(TTexts.resendEmail, style: TextStyle(color: TColors.accent))
                 ),
               ),
-
             ],
           ),
         ),

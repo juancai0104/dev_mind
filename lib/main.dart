@@ -4,8 +4,10 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'app.dart';
 import 'features/authentication/controllers/auth_controller.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
+  await dotenv.load(fileName: ".env");
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   await GetStorage.init();

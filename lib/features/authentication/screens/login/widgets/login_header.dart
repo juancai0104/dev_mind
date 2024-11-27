@@ -16,34 +16,46 @@ class TLoginHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dark = THelperFunctions.isDarkMode(context);
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
 
     return Stack(
       clipBehavior: Clip.none,
       children: [
         Positioned(
-          top: -THelperFunctions.screenHeight() * 0.08,
-          right: -THelperFunctions.screenWidth() * 0.3,
+          top: -screenHeight * 0.08,
+          right: -screenWidth * 0.4,
           child: Container(
-            width: THelperFunctions.screenWidth() * 1.4,
-            height: THelperFunctions.screenHeight() * 0.38,
-            padding: const EdgeInsets.all(0),
+            width: screenWidth * 1.4,
+            height: screenHeight * 0.3,
             decoration: const BoxDecoration(
               borderRadius: BorderRadius.only(bottomLeft: Radius.circular(400)),
-              color: TColors.secondary
+              color: TColors.secondary,
             ),
           ),
         ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Image(
-              height: 151,
-              image: AssetImage(dark ? TImages.lightAppLogo : TImages.darkAppLogo),
-            ),
-            Text(TTexts.loginTitle, style: Theme.of(context).textTheme.headlineMedium,textAlign: TextAlign.end),
-            const SizedBox(height: TSizes.sm),
-            Text(TTexts.loginSubtitle, style: Theme.of(context).textTheme.bodyMedium, textAlign: TextAlign.end),
-          ],
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Image(
+                height: screenHeight * 0.1,
+                image: AssetImage(dark ? TImages.lightAppLogo : TImages.darkAppLogo),
+              ),
+              Text(
+                TTexts.loginTitle,
+                style: Theme.of(context).textTheme.headlineMedium,
+                textAlign: TextAlign.end,
+              ),
+              const SizedBox(height: TSizes.sm),
+              Text(
+                TTexts.loginSubtitle,
+                style: Theme.of(context).textTheme.bodyMedium,
+                textAlign: TextAlign.end,
+              ),
+            ],
+          ),
         ),
       ],
     );

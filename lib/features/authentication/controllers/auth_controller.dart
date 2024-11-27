@@ -4,6 +4,7 @@ import 'package:dev_mind/features/module/screens/home/home.dart';
 import 'package:dev_mind/utils/constants/colors.dart';
 import 'package:flutter/animation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -15,26 +16,31 @@ import 'package:google_sign_in/google_sign_in.dart';
 import '../screens/password_configuration/reset_password.dart';
 
 class AuthController extends GetxController {
-  // Variables de estado
+
   var currentUser = Rxn<User>();
   var isLoading = false.obs;
   var errorMessage = ''.obs;
   var isAuthenticated = false.obs;
 
-  // Variables de configuración
-  final String apiUrl = 'http://10.0.2.2:3000/api/auth';
-  final String apiUrlUpdate = 'http://10.0.2.2:3000/api/users';
+  late final String apiUrl;
+  late final String apiUrlUpdate;
   final Duration timeout = const Duration(seconds: 10);
   final GoogleSignIn _googleSignIn = GoogleSignIn();
   final firebase_auth.FirebaseAuth _firebaseAuth = firebase_auth.FirebaseAuth.instance;
 
-  // Encabezados de las peticiones HTTP
+  @override
+  void onInit() {
+    super.onInit();
+    final baseUrl = dotenv.env['API_URL'];
+    apiUrl = '$baseUrl/auth';
+    apiUrlUpdate = '$baseUrl/users';
+  }
+
   Map<String, String> get _headers => {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
   };
 
-  // Métodos para autenticación
 
   Future<void> signup(User user) async {
     isLoading.value = true;
@@ -187,34 +193,27 @@ class AuthController extends GetxController {
     }
   }
 
-  // Método para autenticación con Google
-  // En el AuthController de Flutter
-
   Future<void> signInWithGoogle() async {
     isLoading.value = true;
     errorMessage.value = '';
 
     try {
-      // Limpiar sesiones previas
+
       await _googleSignIn.signOut();
       await _firebaseAuth.signOut();
 
-      // Iniciar proceso de Google Sign In
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       if (googleUser == null) {
         throw Exception('Se canceló el inicio de sesión con Google');
       }
 
-      // Obtener credenciales de Google
       final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
 
-      // Crear credencial de Firebase
       final credential = firebase_auth.GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
-      // Autenticar con Firebase
       final firebase_auth.UserCredential firebaseResult =
       await _firebaseAuth.signInWithCredential(credential);
 
@@ -223,7 +222,6 @@ class AuthController extends GetxController {
         throw Exception('No se pudo obtener la información del usuario');
       }
 
-      // Preparar datos para el backend
       final Map<String, dynamic> userData = {
         'id': firebaseUser.uid,
         'googleId': firebaseUser.uid,
@@ -233,7 +231,6 @@ class AuthController extends GetxController {
         'phoneNumber': firebaseUser.phoneNumber ?? '',
       };
 
-      // Enviar datos al backend
       final response = await http.post(
         Uri.parse('$apiUrl/google-signin'),
         headers: _headers,
@@ -275,7 +272,7 @@ class AuthController extends GetxController {
           icon: const Icon(Icons.check_circle, color: Colors.white),
         );
       } else {
-        // Manejar el error específico de correo existente
+
         if (responseData['code'] == 'EMAIL_EXISTS') {
           Get.snackbar(
             'Error',
@@ -295,7 +292,6 @@ class AuthController extends GetxController {
     } catch (e) {
       print('Error detallado en signInWithGoogle: $e');
 
-      // Limpiar estado en caso de error
       await _googleSignIn.signOut();
       await _firebaseAuth.signOut();
       currentUser.value = null;

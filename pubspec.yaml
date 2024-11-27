@@ -39,7 +39,7 @@ dependencies:
   google_sign_in: ^6.2.1
   firebase_auth: ^5.1.4
   firebase_core: ^3.3.0
-
+  flutter_dotenv: ^5.2.1
   # State management
   get: ^4.6.6
   get_storage: ^2.1.1
@@ -89,6 +89,7 @@ flutter:
     - assets/logos/
     - assets/logos/dev_mind/
     - assets/logos/languages/
+    - .env
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 

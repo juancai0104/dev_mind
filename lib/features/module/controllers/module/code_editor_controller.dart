@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
 class CodeEditorController {
+  final baseUrl = dotenv.env['API_URL'];
   Future<String> executeCode({
     required String code,
     required int moduleId,
@@ -9,7 +11,7 @@ class CodeEditorController {
   }) async {
     try {
       final response = await http.post(
-        Uri.parse('http://10.0.2.2:3000/api/compile'),
+        Uri.parse('$baseUrl/compile'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },

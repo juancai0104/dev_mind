@@ -10,7 +10,6 @@ class ProgressController extends GetxController {
 
   final int userId;
   final int moduleId;
-
   ProgressController({
     required this.userId,
     required this.moduleId,

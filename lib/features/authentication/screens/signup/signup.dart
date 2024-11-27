@@ -10,8 +10,6 @@ import '../../../../utils/constants/sizes.dart';
 import '../../../../utils/constants/text_strings.dart';
 import '../../../../utils/helpers/helper_functions.dart';
 
-// HACER ENLACE PARA EN CASO DE QUE EL COOREO ELECTRONICO INGRESADO ESTE YA REGISTRADO QUE SE DEVUELVA AL LOGIN SCREEN
-
 class SignupScreen extends StatelessWidget {
   const SignupScreen({super.key});
 

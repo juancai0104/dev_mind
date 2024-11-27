@@ -2,12 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../utils/constants/colors.dart';
-import '../../modules/module_cards/module_card_java.dart';
-import '../../modules/module_cards/module_card_python.dart';
+import '../../modules/module_cards/module_cards_final.dart';
 import '../curved_edges/curved_edges_widget.dart';
 import 'circular_container.dart';
 
 class TPrimaryHeaderContainer extends StatelessWidget {
+
   const TPrimaryHeaderContainer({
     super.key,
     required this.child
@@ -33,19 +33,20 @@ class TPrimaryHeaderContainer extends StatelessWidget {
                     Positioned(top: 100, right: -300, child: TCircularContainer(backgroundColor: TColors.textWhite.withOpacity(0.1))),
                     child,
                     Positioned(
-                      top: 260, // Ajusta según sea necesario para posicionar debajo del componente de saludo
-                      left: 20, // Espaciado desde el margen izquierdo
-                      right: 20, // Espaciado desde el margen derecho
+
+                      top: 260,
+                      left: 20,
+                      right: 20,
                       child: GridView.count(
+
                         shrinkWrap: true,
                         crossAxisCount: 2,
-                        childAspectRatio: (160 / 250), // Ajustado para hacer las tarjetas más pequeñas
-                        crossAxisSpacing: 20, // Espacio horizontal entre las tarjetas
-                        mainAxisSpacing: 20, // Espacio vertical entre las tarjetas
-                        padding: const EdgeInsets.symmetric(horizontal: 1), // Añade espacio en los lados del GridView
+                        childAspectRatio: (160 / 250),
+                        crossAxisSpacing: 20,
+                        mainAxisSpacing: 20,
+                        padding: const EdgeInsets.symmetric(horizontal: 1),
                         children: const [
-                          TModuleCardJava(),
-                          TModuleCardPython(),
+                          ModuleCard(languageId: 1, userId: 1),
                         ],
                       ),
                     ),

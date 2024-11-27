@@ -1,12 +1,19 @@
 import 'dart:async';
 
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class UserValidationController extends GetxController {
-  final String apiUrl = 'http://10.0.2.2:3000/api/auth';
+  late final String apiUrl;
 
+  @override
+  void onInit() {
+    super.onInit();
+    final baseUrl = dotenv.env['API_URL'];
+    apiUrl = '$baseUrl/auth';
+  }
 
   var isEmailAvailable = true.obs;
   var isUsernameAvailable = true.obs;

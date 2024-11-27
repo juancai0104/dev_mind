@@ -28,10 +28,10 @@ class ModuleCard extends StatelessWidget {
       fontWeight: FontWeight.w500,
     );
 
-    // Crea un controlador único para esta tarjeta, basado en languageId y userId.
+
     final ProgressController progressController = Get.put(
       ProgressController(userId: userId, moduleId: languageId),
-      tag: 'progress_${userId}_$languageId', // Usando un tag único para cada controlador
+      tag: 'progress_${userId}_$languageId',
     );
 
     final Map<int, String> languageNames = {

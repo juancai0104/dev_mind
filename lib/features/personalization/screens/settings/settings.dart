@@ -74,7 +74,7 @@ class _SettingsScreenState extends State<SettingsScreen>
             child: THomeAppBar(),
           ),
           Positioned(
-            top: 180,
+            top: 260,
             left: MediaQuery.of(context).size.width * 0.44,
             child: FadeTransition(
               opacity: _fadeAnimation,
@@ -91,7 +91,7 @@ class _SettingsScreenState extends State<SettingsScreen>
             ),
           ),
           Positioned(
-            top: 270,
+            top: 320,
             left: 16,
             right: 16,
             child: Column(
@@ -112,7 +112,7 @@ class _SettingsScreenState extends State<SettingsScreen>
             ),
           ),
           Positioned(
-            top: 420,
+            top: 450,
             left: 16,
             right: 16,
             child: Column(

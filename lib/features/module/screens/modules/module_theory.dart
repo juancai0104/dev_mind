@@ -1,5 +1,4 @@
 import 'package:dev_mind/common/widgets/appbar/appbar.dart';
-import 'package:dev_mind/common/widgets/modules/module_cards/module_card_java.dart';
 import 'package:dev_mind/features/module/screens/modules/widgets/code_editor.dart';
 import 'package:dev_mind/utils/constants/sizes.dart';
 import 'package:flutter/material.dart';
@@ -22,17 +21,11 @@ class ModuleTheoryScreen extends StatelessWidget {
     controller.getByModuleId(languageId);
     final dark = THelperFunctions.isDarkMode(context);
 
-    //final Map<int, String> staticContent = {
-    //  1: "Python es un lenguaje de programación interpretado, interactivo y orientado a objetos. Es muy popular por su facilidad de aprendizaje y versatilidad. En esta sección aprenderás sobre su sintaxis básica, estructuras de datos como listas y diccionarios, y funciones. En los ejercicios siguientes pondrás en práctica estos conceptos para resolver problemas reales.",
-    //  2: "JavaScript es el lenguaje de programación de la web. Es utilizado para desarrollar páginas web interactivas y aplicaciones. En esta sección explorarás cómo funcionan las variables, funciones y eventos en JavaScript. Los ejercicios siguientes te permitirán interactuar con el DOM y manipular elementos de una página web.",
-    //};
-
     final Map<int, String> staticImages = {
       1: "assets/logos/languages/python.png",
       2: "assets/logos/languages/java.png",
     };
 
-    //final String content = staticContent[languageId] ?? "No hay teoría disponible para este lenguaje.";
     final String imagePath = staticImages[languageId] ?? "assets/images/default.png";
 
     return Scaffold(

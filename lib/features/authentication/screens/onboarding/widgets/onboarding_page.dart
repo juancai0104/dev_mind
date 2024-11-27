@@ -17,12 +17,14 @@ class OnBoardingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Padding(
-      padding: const EdgeInsets.all(TSizes.defaultSpace),
+      padding: EdgeInsets.all(screenWidth * 0.05),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Imagen con animación de entrada
           TweenAnimationBuilder<double>(
             tween: Tween(begin: 0.0, end: 1.0),
             duration: const Duration(milliseconds: 700),
@@ -33,15 +35,13 @@ class OnBoardingPage extends StatelessWidget {
               );
             },
             child: Image(
-              width: THelperFunctions.screenWidth() * 0.8,
-              height: THelperFunctions.screenHeight() * 0.5,
+              width: screenWidth * 0.8,
+              height: screenHeight * 0.5,
               image: AssetImage(image),
               alignment: alignment,
             ),
           ),
-          const SizedBox(height: TSizes.spaceBtwItems),
-
-          // Título con animación de fade
+          SizedBox(height: screenHeight * 0.03),
           AnimatedOpacity(
             opacity: 1.0,
             duration: const Duration(milliseconds: 500),
@@ -50,14 +50,12 @@ class OnBoardingPage extends StatelessWidget {
               style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                 fontWeight: FontWeight.bold,
                 letterSpacing: 0.5,
+                fontSize: screenWidth * 0.06,
               ),
               textAlign: TextAlign.center,
             ),
           ),
-
-          const SizedBox(height: TSizes.spaceBtwItems),
-
-          // Subtítulo con animación de fade
+          SizedBox(height: screenHeight * 0.03),
           AnimatedOpacity(
             opacity: 1.0,
             duration: const Duration(milliseconds: 500),
@@ -66,6 +64,7 @@ class OnBoardingPage extends StatelessWidget {
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 height: 1.5,
                 letterSpacing: 0.5,
+                fontSize: screenWidth * 0.045,
               ),
               textAlign: TextAlign.center,
             ),

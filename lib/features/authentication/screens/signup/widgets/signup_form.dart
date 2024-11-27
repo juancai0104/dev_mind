@@ -55,8 +55,6 @@ class _TSignupFormState extends State<TSignupForm> {
     passwordController.dispose();
     super.dispose();
   }
-
-  // Validadores actualizados
   String? _validateRequired(String? value, String fieldName) {
     if (value == null || value.trim().isEmpty) {
       return '$fieldName es requerido';
@@ -119,7 +117,6 @@ class _TSignupFormState extends State<TSignupForm> {
       return;
     }
 
-
     final isEmailValid = await validationController.checkEmailAvailability(emailController.text);
     final isUsernameValid = await validationController.checkUsernameAvailability(usernameController.text);
 
@@ -146,153 +143,170 @@ class _TSignupFormState extends State<TSignupForm> {
       authController.signup(user);
     }
   }
-
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Form(
       key: _formKey,
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: TextFormField(
-                  controller: firstNameController,
-                  validator: (value) => _validateRequired(value, 'El nombre'),
-                  decoration: const InputDecoration(
-                    labelText: TTexts.firstName,
-                    prefixIcon: Icon(Iconsax.user),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: TSizes.spaceBtwSections),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    controller: firstNameController,
+                    validator: (value) => _validateRequired(value, 'El nombre'),
+                    decoration: InputDecoration(
+                      labelText: TTexts.firstName,
+                      prefixIcon: Icon(Iconsax.user, color: TColors.secondary),
+                      filled: true,
+                      fillColor: isDark ? Colors.grey[850] : Colors.grey[100],
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(width: TSizes.spaceBtwInputFields / 2),
-              Expanded(
-                child: TextFormField(
-                  controller: lastNameController,
-                  validator: (value) => _validateRequired(value, 'El apellido'),
-                  decoration: const InputDecoration(
-                    labelText: TTexts.lastName,
-                    prefixIcon: Icon(Iconsax.user),
+                const SizedBox(width: TSizes.spaceBtwInputFields / 2),
+                Expanded(
+                  child: TextFormField(
+                    controller: lastNameController,
+                    validator: (value) => _validateRequired(value, 'El apellido'),
+                    decoration: InputDecoration(
+                      labelText: TTexts.lastName,
+                      prefixIcon: Icon(Iconsax.user, color: TColors.secondary),
+                      filled: true,
+                      fillColor: isDark ? Colors.grey[850] : Colors.grey[100],
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: TSizes.spaceBtwInputFields),
-
-          // Username with validation indicator
-          Obx(() => TextFormField(
-            controller: usernameController,
-            validator: _validateUsername,
-            decoration: InputDecoration(
-              labelText: TTexts.username,
-              prefixIcon: const Icon(Iconsax.user_edit),
-              suffixIcon: validationController.isValidating.value
-                  ? const SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              )
-                  : Icon(
-                validationController.isUsernameAvailable.value
-                    ? Icons.check_circle
-                    : Icons.error,
-                color: validationController.isUsernameAvailable.value
-                    ? Colors.green
-                    : Colors.red,
-              ),
+              ],
             ),
-          )),
-          const SizedBox(height: TSizes.spaceBtwInputFields),
-
-          // Email with validation indicator
-          Obx(() => TextFormField(
-            controller: emailController,
-            validator: _validateEmail,
-            keyboardType: TextInputType.emailAddress,
-            decoration: InputDecoration(
-              labelText: TTexts.email,
-              prefixIcon: const Icon(Iconsax.direct),
-              suffixIcon: validationController.isValidating.value
-                  ? const SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              )
-                  : Icon(
-                validationController.isEmailAvailable.value
-                    ? Icons.check_circle
-                    : Icons.error,
-                color: validationController.isEmailAvailable.value
-                    ? Colors.green
-                    : Colors.red,
-              ),
-            ),
-          )),
-          const SizedBox(height: TSizes.spaceBtwInputFields),
-
-          // Resto del formulario sin cambios...
-          TextFormField(
-            controller: phoneNumberController,
-            validator: _validatePhone,
-            keyboardType: TextInputType.phone,
-            decoration: const InputDecoration(
-              labelText: TTexts.phoneNumber,
-              prefixIcon: Icon(Iconsax.call),
-            ),
-          ),
-          const SizedBox(height: TSizes.spaceBtwInputFields),
-
-          TextFormField(
-            controller: passwordController,
-            validator: _validatePassword,
-            obscureText: _obscurePassword,
-            decoration: InputDecoration(
-              labelText: TTexts.password,
-              prefixIcon: const Icon(Iconsax.password_check),
-              suffixIcon: IconButton(
-                onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
-                icon: Icon(_obscurePassword ? Iconsax.eye_slash : Iconsax.eye),
-              ),
-            ),
-          ),
-          const SizedBox(height: TSizes.spaceBtwSections),
-
-          Row(
-            children: [
-              Checkbox(
-                value: _termsAccepted,
-                onChanged: (value) => setState(() => _termsAccepted = value ?? false),
-              ),
-              const Expanded(
-                child: Text(
-                  'Acepto los términos y condiciones al registrar mi cuenta y mis datos personales en las bases de datos de DEV|MIND inc',
-                  style: TextStyle(fontSize: 12),
+            const SizedBox(height: TSizes.spaceBtwInputFields),
+            Obx(() => TextFormField(
+              controller: usernameController,
+              validator: _validateUsername,
+              decoration: InputDecoration(
+                labelText: TTexts.username,
+                prefixIcon: const Icon(Iconsax.user_edit, color: TColors.secondary),
+                suffixIcon: validationController.isValidating.value
+                    ? const CircularProgressIndicator(strokeWidth: 2)
+                    : Icon(
+                  validationController.isUsernameAvailable.value
+                      ? Icons.check_circle
+                      : Icons.error,
+                  color: validationController.isUsernameAvailable.value
+                      ? Colors.green
+                      : Colors.red,
+                ),
+                filled: true,
+                fillColor: isDark ? Colors.grey[850] : Colors.grey[100],
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
                 ),
               ),
-            ],
-          ),
-          const SizedBox(height: TSizes.spaceBtwSections),
-
-          SizedBox(
-            width: double.infinity,
-            child: Obx(
-                  () => ElevatedButton(
-                onPressed: authController.isLoading.value ? null : _handleSignup,
-                child: authController.isLoading.value
-                    ? const SizedBox(
-                  height: 20,
-                  width: 20,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                  ),
-                )
-                    : const Text(TTexts.createAccount),
+            )),
+            const SizedBox(height: TSizes.spaceBtwInputFields),
+            Obx(() => TextFormField(
+              controller: emailController,
+              validator: _validateEmail,
+              decoration: InputDecoration(
+                labelText: TTexts.email,
+                prefixIcon: const Icon(Iconsax.direct, color: TColors.secondary),
+                suffixIcon: validationController.isValidating.value
+                    ? const CircularProgressIndicator(strokeWidth: 2)
+                    : Icon(
+                  validationController.isEmailAvailable.value
+                      ? Icons.check_circle
+                      : Icons.error,
+                  color: validationController.isEmailAvailable.value
+                      ? Colors.green
+                      : Colors.red,
+                ),
+                filled: true,
+                fillColor: isDark ? Colors.grey[850] : Colors.grey[100],
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+            )),
+            TextFormField(
+              controller: phoneNumberController,
+              validator: _validatePhone,
+              decoration: InputDecoration(
+                labelText: TTexts.phoneNumber,
+                prefixIcon: Icon(Iconsax.call, color: TColors.secondary),
+                filled: true,
+                fillColor: isDark ? Colors.grey[850] : Colors.grey[100],
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
               ),
             ),
-          ),
-        ],
+            const SizedBox(height: TSizes.spaceBtwInputFields),
+
+            // Contraseña Field
+            TextFormField(
+              controller: passwordController,
+              validator: _validatePassword,
+              obscureText: _obscurePassword,
+              decoration: InputDecoration(
+                labelText: TTexts.password,
+                prefixIcon: const Icon(Iconsax.password_check, color: TColors.secondary),
+                suffixIcon: IconButton(
+                  icon: Icon(_obscurePassword ? Iconsax.eye_slash : Iconsax.eye, color: TColors.secondary),
+                  onPressed: () {
+                    setState(() {
+                      _obscurePassword = !_obscurePassword;
+                    });
+                  },
+                ),
+                filled: true,
+                fillColor: isDark ? Colors.grey[850] : Colors.grey[100],
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+            ),
+            const SizedBox(height: TSizes.spaceBtwInputFields),
+            Row(
+              children: [
+                Checkbox(
+                  value: _termsAccepted,
+                  onChanged: (value) {
+                    setState(() {
+                      _termsAccepted = value!;
+                    });
+                  },
+                ),
+                Flexible( // O también puedes usar Expanded
+                  child: Text(TTexts.acceptTerms),
+                ),
+              ],
+            ),
+            const SizedBox(height: TSizes.spaceBtwInputFields),
+            // Botón de Registro
+            SizedBox(
+
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _handleSignup,
+                child: Text(TTexts.createAccount),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
