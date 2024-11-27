@@ -7,6 +7,8 @@ import 'app.dart';
 import 'features/authentication/controllers/auth_controller.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+import 'features/authentication/controllers/onboarding/onboarding_controller.dart';
+
 void main() async {
   await dotenv.load(fileName: ".env");
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,5 +16,6 @@ void main() async {
   await GetStorage.init();
   await NotificationService.init();
   Get.put(AuthController());
+  Get.put(OnBoardingController());
   runApp(const App());
 }

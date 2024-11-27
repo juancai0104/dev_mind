@@ -46,7 +46,7 @@ class _TLoginFormState extends State<TLoginForm> {
               decoration: InputDecoration(
                 prefixIcon: Container(
                   padding: const EdgeInsets.all(12),
-                  child: Icon(Iconsax.user, color: TColors.secondary),
+                  child: Icon(Iconsax.user, color: TColors.warning),
                 ),
                 hintText: 'nombre@ejemplo.com',
                 filled: true,
@@ -81,7 +81,7 @@ class _TLoginFormState extends State<TLoginForm> {
               decoration: InputDecoration(
                 prefixIcon: Container(
                   padding: const EdgeInsets.all(12),
-                  child: Icon(Iconsax.lock, color: TColors.secondary),
+                  child: Icon(Iconsax.lock, color: TColors.warning),
                 ),
                 hintText: '••••••••',
                 filled: true,

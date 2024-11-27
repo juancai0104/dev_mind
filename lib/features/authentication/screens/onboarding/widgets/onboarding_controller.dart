@@ -1,36 +1,45 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:dev_mind/utils/local_storage/storage_utility.dart';
-import 'package:dev_mind/features/authentication/screens/login/login.dart';
 
 class OnBoardingController extends GetxController {
   static OnBoardingController get instance => Get.find();
 
-  final pageController = PageController();
-  Rx<int> currentPageIndex = 0.obs;
+  PageController pageController = PageController();
+
+  RxInt currentPage = 0.obs;
 
   void updatePageIndicator(int index) {
-    currentPageIndex.value = index;
+    currentPage.value = index;
   }
 
   void dotNavigationClick(int index) {
-    currentPageIndex.value = index;
-    pageController.jumpTo(index.toDouble());
+    currentPage.value = index;
+    pageController.jumpToPage(index);
   }
 
   void nextPage() {
-    if (currentPageIndex.value == 2) {
-      TLocalStorage().saveData('isFirstTime', false);
-      Get.offAll(() => const LoginScreen());
-    } else {
-      int page = currentPageIndex.value + 1;
-      pageController.jumpToPage(page);
+    if (currentPage.value < 2) {
+      currentPage.value++;
+      pageController.animateToPage(
+        currentPage.value,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
     }
   }
 
-  /// Skip function
   void skipPage() {
-    TLocalStorage().saveData('isFirstTime', false);
-    Get.offAll(() => const LoginScreen());
+    currentPage.value = 2;
+    pageController.animateToPage(
+      2,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  @override
+  void dispose() {
+    pageController.dispose();
+    super.dispose();
   }
 }

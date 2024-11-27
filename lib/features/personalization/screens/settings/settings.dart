@@ -175,7 +175,7 @@ class _SettingsScreenState extends State<SettingsScreen>
             ),
           ),
           Positioned(
-            bottom: 30,
+            bottom: 10,
             left: MediaQuery.of(context).size.width * 0.25,
             child: ElevatedButton.icon(
               icon: const Icon(Iconsax.logout, size: 28),

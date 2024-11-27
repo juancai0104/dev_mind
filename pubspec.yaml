@@ -55,6 +55,7 @@ dependencies:
   flutter_launcher_icons: ^0.14.1
   flutter_local_notifications: ^18.0.1
   timezone: ^0.10.0
+  shared_preferences: ^2.3.3
 
 dev_dependencies:
   flutter_test:
