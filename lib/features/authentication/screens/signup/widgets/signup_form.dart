@@ -239,6 +239,7 @@ class _TSignupFormState extends State<TSignupForm> {
                 ),
               ),
             )),
+            const SizedBox(height: TSizes.spaceBtwInputFields),
             TextFormField(
               controller: phoneNumberController,
               validator: _validatePhone,
